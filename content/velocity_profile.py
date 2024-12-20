@@ -136,10 +136,9 @@ def tractive_power_profile(debug_mode, f_tr, terminal_velocity, k1, k2, tf):
     st.plotly_chart(power_fig, use_container_width=True)
 
     # Display Results
-    st.write("### Tractive Power Calculations")
-    st.success(f"**Terminal Power (P_T):** {terminal_power / 1000:.2f} kW")
-    st.success(f"**Peak Tractive Power (P_TRpk):** {peak_power / 1000:.2f} kW")
-    st.success(f"**Mean Tractive Power (P̄_TR):** {mean_power / 1000:.2f} kW")
+    st.success(f"Terminal Power (P_T): **{terminal_power / 1000:.2f} kW**")
+    st.success(f"Peak Tractive Power (P_TRpk): **{peak_power / 1000:.2f} kW**")
+    st.success(f"Mean Tractive Power (P̄_TR): **{mean_power / 1000:.2f} kW**")
 
     # Debugging Information
     if debug_mode:
