@@ -12,7 +12,8 @@ with tabs[0]:
 
 with tabs[1]:
     drive_profile()
-    distance_profile()
     tractive_power()
+    distance_profile()
+
 
 

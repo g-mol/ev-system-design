@@ -1,6 +1,10 @@
 import pandas as pd
 import streamlit as st
 import plotly.graph_objs as go
+import config
+
+import constants
+from content.vehicle_dynamics import vehicle_dynamics
 
 
 def drive_profile():
@@ -154,8 +158,8 @@ def tractive_power():
     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
 
     # Constants (assumed; replace with actual values)
-    mass = 1500  # mass in kg (example)
-    g = 9.81  # acceleration due to gravity in m/s²
+    mass = config.mass  # mass in kg (example)
+    g = constants.GRAVITY  # acceleration due to gravity in m/s²
     Kx = 0.01  # rolling resistance coefficient (example)
     Kr = 0.02  # aerodynamic drag coefficient (example)
 
