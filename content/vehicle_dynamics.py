@@ -8,6 +8,8 @@ from calculations import (
     calculate_traction_force,
     calculate_power_required,
     calculate_required_tractive_force_near_zero,
+    calculate_k1,
+    calculate_k2
 )
 from constants import AIR_DENSITY, GRAVITY, C_DRAG
 
@@ -18,7 +20,7 @@ def vehicle_dynamics():
     # --- User Inputs ---
     st.sidebar.header("Vehicle Parameters")
     debug_mode = st.sidebar.checkbox("Debug Mode", value=False)
-    formula_mode = st.sidebar.checkbox("Show Formulas", value=False)
+    formula_mode = st.sidebar.checkbox("Show Formulas", value=True)
 
     # Vehicle Inputs
     mass = st.sidebar.number_input("Vehicle Mass (kg)", min_value=500, max_value=5000, value=2570)
@@ -31,8 +33,8 @@ def vehicle_dynamics():
     headwind_speed = st.sidebar.number_input("Headwind Speed (km/h)", min_value=0, max_value=100, value=20)
     wheel_radius = st.sidebar.number_input("Wheel Radius (m)", min_value=0.1, max_value=1.0, value=0.3, step=0.01)
     gradeability_percent = st.sidebar.number_input("Gradeability (%)", min_value=0.0, max_value=100.0, value=25.0)
-    C0 = st.sidebar.number_input("Static Rolling Resistance Coefficient (C0)", min_value=0.005, max_value=0.05, value=0.01, step=0.001)
-    C1 = st.sidebar.number_input("Speed-dependent Coefficient (C1)", min_value=0.0, max_value=0.00001, value=0.000005, step=0.000001, format="%.6f")
+    C0 = st.sidebar.number_input("Static Rolling Resistance Coefficient (C0)", min_value=0.005, max_value=0.05, value=0.008, step=0.001, format="%.3f")
+    C1 = st.sidebar.number_input("Speed-dependent Coefficient (C1)", min_value=0.0, max_value=0.00001, value=0.0000016, step=0.000001, format="%.7f")
 
     # Convert Units
     top_speed_mps = top_speed / 3.6
@@ -50,6 +52,8 @@ def vehicle_dynamics():
     traction_force = calculate_traction_force(road_load_force, mass, acceleration, km)
     power_required = calculate_power_required(traction_force, top_speed_mps)
     required_tractive_force_near_zero = calculate_required_tractive_force_near_zero(mass, gradeability_percent)
+    k1 = calculate_k1(traction_force, mass, GRAVITY, C0)
+    k2 = calculate_k2(AIR_DENSITY, C_DRAG, frontal_area, mass, GRAVITY, C1)
 
 
     # --- Results Display ---
@@ -122,7 +126,6 @@ def vehicle_dynamics():
         st.write(f" - Traction Force (F_TR): {traction_force:.2f} N")
         st.write(f" - Vehicle Speed (v_xT): {top_speed_mps:.2f} m/s")
 
-
     st.subheader("7. Required Maximum Traction Force for Gradeability")
     if formula_mode:
         st.latex(r"F_{\text{TR}} = \frac{m \cdot g \cdot \tan(\beta)}{\sqrt{1 + \tan^2(\beta)}}")
@@ -131,3 +134,29 @@ def vehicle_dynamics():
         st.write(f" - Vehicle Mass (m): {mass} kg")
         st.write(f" - Gravitational Acceleration (g): {GRAVITY} m/s²")
         st.write(f" - Input Gradeability: {gradeability_percent:.2f} % -> {math.degrees(math.atan(gradeability_percent / 100)):.2f}° -> {math.atan(gradeability_percent / 100):.2f} rad")
+
+    # --- K1 Calculation ---
+    st.subheader("8: K1 Constant")
+    if formula_mode:
+        st.latex(r"K_1 = \frac{F_{\text{TR}}}{m} - gC_0")
+    st.success(f"K1: **{k1:.5f}**")
+    if debug_mode:
+        st.write("### Debug Information for K1")
+        st.write(f" - Traction Force (F_TR): {traction_force:.2f} N")
+        st.write(f" - Vehicle Mass (m): {mass} kg")
+        st.write(f" - Gravity (g): {GRAVITY} m/s²")
+        st.write(f" - Rolling Resistance Coefficient (C0): {C0}")
+
+    # --- K2 Calculation ---
+    st.subheader("9: K2 Constant")
+    if formula_mode:
+        st.latex(r"K_2 = \frac{\rho C_D A_F}{2m} + gC_1")
+    st.success(f"K2: **{k2:.5f}**")
+    if debug_mode:
+        st.write("### Debug Information for K2")
+        st.write(f" - Air Density (ρ): {AIR_DENSITY} kg/m³")
+        st.write(f" - Drag Coefficient (C_D): {C_DRAG}")
+        st.write(f" - Frontal Area (A_F): {frontal_area:.2f} m²")
+        st.write(f" - Vehicle Mass (m): {mass} kg")
+        st.write(f" - Gravity (g): {GRAVITY} m/s²")
+        st.write(f" - Speed-dependent Rolling Resistance Coefficient (C1): {C1}")
