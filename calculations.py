@@ -62,7 +62,6 @@ def calculate_distance_traversed(k2, terminal_velocity, time_array):
 
 
 def calculate_instantaneous_power(f_tr, terminal_velocity, k2, time_array):
-
     return f_tr * terminal_velocity * np.tanh(k2 * terminal_velocity * time_array)
 
 

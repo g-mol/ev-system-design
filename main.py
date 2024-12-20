@@ -15,7 +15,3 @@ with tabs[1]:
     distance_profile()
     tractive_power()
     energy_consumption()
-
-
-
-
