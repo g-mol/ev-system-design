@@ -6,7 +6,8 @@ from calculations import (
     calculate_instantaneous_power,
     calculate_terminal_power,
     calculate_peak_power,
-    calculate_mean_power
+    calculate_mean_power,
+    calculate_terminal_velocity
 )
 
 
@@ -15,13 +16,16 @@ def velocity_profile(debug_mode, k1, k2):
 
     # Calculate the velocity profile
     profile_ms = calculate_velocity_profile(k1, k2, time_array)
-
-    # Convert velocity to km/h for readability
     velocity_profile_kmh = profile_ms * 3.6
+
+    # Calculate terminal velocity
+    terminal_velocity_ms = calculate_terminal_velocity(k1, k2)
+    terminal_velocity_kmh = terminal_velocity_ms * 3.6
 
     # --- Plotly Graph ---
     velocity_fig = go.Figure()
 
+    # Velocity Profile Plot
     velocity_fig.add_trace(go.Scatter(
         x=time_array,
         y=velocity_profile_kmh,
@@ -30,7 +34,16 @@ def velocity_profile(debug_mode, k1, k2):
         line=dict(color='blue')
     ))
 
-    # Customize layout
+    # Terminal Velocity Dotted Line
+    velocity_fig.add_trace(go.Scatter(
+        x=[0, time_array[-1]],  # Line from t=0 to the last time point
+        y=[terminal_velocity_kmh, terminal_velocity_kmh],
+        mode='lines',
+        name='Terminal Velocity (V_T)',
+        line=dict(color='red', dash='dash')  # Red dashed line
+    ))
+
+    # Customize Layout
     velocity_fig.update_layout(
         title='Velocity-Time Profile',
         xaxis_title='Time (s)',
@@ -39,6 +52,7 @@ def velocity_profile(debug_mode, k1, k2):
         showlegend=True
     )
 
+    # Display in Streamlit
     st.plotly_chart(velocity_fig, use_container_width=True)
 
     # Debugging Information
@@ -46,7 +60,8 @@ def velocity_profile(debug_mode, k1, k2):
         st.write("### Debug Information for Velocity Profile")
         st.write(f" - K1: {k1:.5f}")
         st.write(f" - K2: {k2:.5f}")
-        st.write(f" - Maximum Velocity: {np.max(velocity_profile_kmh):.2f} km/h")
+        st.write(f" - Terminal Velocity: {terminal_velocity_kmh:.2f} km/h")
+        st.write(f" - Maximum Velocity from Profile: {np.max(velocity_profile_kmh):.2f} km/h")
 
 
 def distance_profile(debug_mode, k2, terminal_velocity):

@@ -77,7 +77,6 @@ def vehicle_dynamics():
     config.time_to_vt = calculate_time_to_terminal_velocity(config.k1, config.k2, config.terminal_velocity)
 
 
-
 # --- Results Display ---
     st.header("Calculation Results")
     st.subheader("1. Rolling Resistance Force")
@@ -87,7 +86,7 @@ def vehicle_dynamics():
     st.success(f"Rolling Resistance Force: **{config.rolling_force / 1000:.2f} kN**")
     if debug_mode:
         st.write(f" - Static Coefficient (C0): {config.C0}")
-        st.write(f" - Speed-dependent Coefficient (C1): {C1}")
+        st.write(f" - Speed-dependent Coefficient (C1): {config.C1}")
         st.write(f" - Vehicle Mass (m): {config.mass} kg")
         st.write(f" - Gravity (g): {GRAVITY} m/s²")
         st.write(f" - Speed Squared (v_xT²): {config.top_speed_mps ** 2:.2f} (m/s)²")
@@ -130,7 +129,7 @@ def vehicle_dynamics():
     st.success(f"Traction Force: **{config.traction_force / 1000:.2f} kN**")
     if debug_mode:
         st.write(f" - Road Load Force (F_RL): {config.road_load_force:.2f} N")
-        st.write(f" - Rotational Inertia Coefficient (k_m): {km}")
+        st.write(f" - Rotational Inertia Coefficient (k_m): {config.km}")
         st.write(f" - Vehicle Mass (m): {config.mass} kg")
         st.write(f" - Time to 100 km/h: {config.time_to_100:.2f} s")
         st.write(f" - Calculated Acceleration (a): {config.acceleration:.2f} m/s²")
@@ -182,19 +181,13 @@ def vehicle_dynamics():
     st.subheader("10: Velocity-Time Profile")
     velocity_profile(debug_mode, config.k1, config.k2)
 
-    st.subheader("11. Terminal Velocity")
+    st.write("##### Terminal Velocity")
     if formula_mode:
         st.latex(r"V_T = \sqrt{\frac{K_1}{K_2}}")
     st.success(f"Terminal Velocity (V_T): **{config.terminal_velocity * 3.6:.2f} km/h**")  # Convert m/s to km/h
-    st.write("#### Time to Reach 98% of Terminal Velocity")
+    st.write("##### Time to Reach 98% of Terminal Velocity")
     st.latex(r"t_{V_T} = \frac{2.3}{\sqrt{K_1 K_2}}")
     st.success(f"Time to reach 98% of terminal velocity: **{config.time_to_vt:.2f} seconds**")
-
-    if debug_mode:
-        st.write("### Debug Information for Terminal Velocity")
-        st.write(f" - K1: {config.k1:.5f}")
-        st.write(f" - K2: {config.k2:.5f}")
-        st.write(f" - Terminal Velocity (V_T): {config.terminal_velocity:.2f} m/s or {config.terminal_velocity * 3.6:.2f} km/h")
 
     st.subheader("12. Distance-Time Profile")
     distance_profile(debug_mode, config.k2, config.terminal_velocity)
