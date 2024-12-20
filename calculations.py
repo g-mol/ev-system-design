@@ -1,4 +1,5 @@
 import math
+import numpy as np
 from constants import AIR_DENSITY, GRAVITY, C_DRAG
 
 
@@ -37,3 +38,12 @@ def calculate_k1(tractive_force, mass, gravity, C0):
 
 def calculate_k2(air_density, drag_coefficient, frontal_area, mass, gravity, C1):
     return ((air_density * drag_coefficient * frontal_area) / (2 * mass)) + (gravity * C1)
+
+
+def calculate_velocity_profile(k1, k2, time_array):
+    velocity = np.sqrt(k1 / k2) * np.tanh(np.sqrt(k1 * k2) * time_array)
+    return velocity
+
+
+def calculate_terminal_velocity(k1, k2):
+    return np.sqrt(k1 / k2)
