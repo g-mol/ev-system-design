@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objs as go
 import config
+import constants
 
 import constants
 from content.vehicle_dynamics import vehicle_dynamics
@@ -157,14 +158,8 @@ def tractive_power():
     # Convert speed from km/h to m/s
     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
 
-    # Constants (assumed; replace with actual values)
-    mass = config.mass  # mass in kg (example)
-    g = constants.GRAVITY  # acceleration due to gravity in m/s²
-    Kx = 0.01  # rolling resistance coefficient (example)
-    Kr = 0.02  # aerodynamic drag coefficient (example)
-
     # Calculate tractive power
-    df['Tractive Power (W)'] = (mass * g * Kx * df['Speed (m/s)'] + 0.5 * Kr * df['Speed (m/s)'] ** 2) * df[
+    df['Tractive Power (W)'] = (config.mass * constants.GRAVITY * config.k1 * df['Speed (m/s)'] + 0.5 * config.k1 * df['Speed (m/s)'] ** 2) * df[
         'Acceleration']
 
     # Create the tractive power plot
