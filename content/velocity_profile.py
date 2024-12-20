@@ -41,3 +41,41 @@ def velocity_profile(debug_mode, k1, k2):
         st.write(f" - K1: {k1:.5f}")
         st.write(f" - K2: {k2:.5f}")
         st.write(f" - Maximum Velocity: {np.max(velocity_profile_kmh):.2f} km/h")
+
+
+def distance_profile(debug_mode, k2, terminal_velocity):
+    # Generate time array
+    time_array = np.linspace(0, 80, 100)  # From 0 to 80 seconds, 100 points
+
+    # Calculate the distance profile
+    k2_vt_t = k2 * terminal_velocity * time_array
+    distance_profile_m = (1 / k2) * np.log(np.cosh(k2_vt_t))
+
+    # --- Plotly Graph ---
+    distance_fig = go.Figure()
+
+    distance_fig.add_trace(go.Scatter(
+        x=time_array,
+        y=distance_profile_m,
+        mode='lines',
+        name='Distance Profile (s(t))',
+        line=dict(color='green')
+    ))
+
+    # Customize layout
+    distance_fig.update_layout(
+        title='Distance-Time Profile',
+        xaxis_title='Time (s)',
+        yaxis_title='Distance (m)',
+        template='plotly_white',
+        showlegend=True
+    )
+
+    st.plotly_chart(distance_fig, use_container_width=True)
+
+    # Debugging Information
+    if debug_mode:
+        st.write("### Debug Information for Distance Traversed")
+        st.write(f" - K2: {k2:.5f}")
+        st.write(f" - Terminal Velocity (V_T): {terminal_velocity:.2f} m/s")
+        st.write(f" - Distance at 80s: {distance_profile_m[-1]:.2f} m")

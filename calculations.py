@@ -47,3 +47,15 @@ def calculate_velocity_profile(k1, k2, time_array):
 
 def calculate_terminal_velocity(k1, k2):
     return np.sqrt(k1 / k2)
+
+
+def calculate_time_to_terminal_velocity(k1, k2, terminal_velocity):
+    # Calculate the time to reach 98% of the terminal velocity
+    time_vt = 2.3 / np.sqrt(k1 * k2)
+    return time_vt
+
+
+def calculate_distance_traversed(k2, terminal_velocity, time_array):
+    k2_vt_t = k2 * terminal_velocity * time_array
+    distance = (1 / k2) * np.log(np.cosh(k2_vt_t))
+    return distance

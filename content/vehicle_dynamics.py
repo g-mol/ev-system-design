@@ -10,9 +10,13 @@ from calculations import (
     calculate_required_tractive_force_near_zero,
     calculate_k1,
     calculate_k2,
-    calculate_terminal_velocity
+    calculate_terminal_velocity,
+    calculate_time_to_terminal_velocity
 )
-from content.velocity_profile import velocity_profile
+from content.velocity_profile import (
+    velocity_profile,
+    distance_profile
+)
 from constants import AIR_DENSITY, GRAVITY, C_DRAG
 
 
@@ -61,6 +65,7 @@ def vehicle_dynamics():
     k1 = calculate_k1(traction_force, mass, GRAVITY, C0)
     k2 = calculate_k2(AIR_DENSITY, C_DRAG, frontal_area, mass, GRAVITY, C1)
     terminal_velocity = calculate_terminal_velocity(k1, k2)
+    time_to_vt = calculate_time_to_terminal_velocity(k1, k2, terminal_velocity)
 
     # --- Results Display ---
     st.header("Calculation Results")
@@ -170,9 +175,15 @@ def vehicle_dynamics():
     if formula_mode:
         st.latex(r"V_T = \sqrt{\frac{K_1}{K_2}}")
     st.success(f"Terminal Velocity (V_T): **{terminal_velocity * 3.6:.2f} km/h**")  # Convert m/s to km/h
+    st.write("#### Time to Reach 98% of Terminal Velocity")
+    st.latex(r"t_{V_T} = \frac{2.3}{\sqrt{K_1 K_2}}")
+    st.success(f"Time to reach 98% of terminal velocity: **{time_to_vt:.2f} seconds**")
 
     if debug_mode:
         st.write("### Debug Information for Terminal Velocity")
         st.write(f" - K1: {k1:.5f}")
         st.write(f" - K2: {k2:.5f}")
         st.write(f" - Terminal Velocity (V_T): {terminal_velocity:.2f} m/s or {terminal_velocity * 3.6:.2f} km/h")
+
+    st.subheader("12. Distance-Time Profile")
+    distance_profile(debug_mode, k2, terminal_velocity)
