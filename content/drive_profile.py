@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import plotly.graph_objs as go
+import config
 
 
 def drive_profile():
@@ -77,7 +78,6 @@ def drive_profile():
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
-
 def distance_profile():
         file_path = 'wltc_drive_profile_low.csv'
 
@@ -135,7 +135,6 @@ def distance_profile():
         except Exception as e:
             st.error(f"An error occurred: {e}")
 
-
 def tractive_power():
     file_path = 'wltc_drive_profile_low.csv'
 
@@ -153,11 +152,15 @@ def tractive_power():
     # Convert speed from km/h to m/s
     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
 
-    # Constants (assumed; replace with actual values)
-    mass = 1500  # mass in kg (example)
-    g = 9.81  # acceleration due to gravity in m/s²
-    Kx = 0.01  # rolling resistance coefficient (example)
-    Kr = 0.02  # aerodynamic drag coefficient (example)
+    # Fetch values from config
+    mass = config.mass
+    g = 9.81  # acceleration due to gravity in m/s² (constant)
+    Kx = config.C0  # rolling resistance coefficient
+    Kr = config.C1  # aerodynamic drag coefficient
+
+    if mass is None or Kx is None or Kr is None:
+        st.error("Please set the values for 'mass', 'C0', and 'C1' in the config file.")
+        return
 
     # Calculate tractive power
     df['Tractive Power (W)'] = (mass * g * Kx * df['Speed (m/s)'] + 0.5 * Kr * df['Speed (m/s)'] ** 2) * df[
@@ -188,6 +191,80 @@ def tractive_power():
 
     try:
         st.plotly_chart(powerFig)  # Display the Tractive Power graph
+    except FileNotFoundError:
+        st.error(f"File not found: {file_path}")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+
+def energy_consumption():
+    file_path = 'wltc_drive_profile_low.csv'
+
+    # Load the CSV file
+    df = pd.read_csv(
+        file_path, sep=';', usecols=[1, 3, 4],
+        names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
+    )
+
+    # Ensure numeric conversion for necessary columns
+    df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')
+    df['Acceleration'] = pd.to_numeric(df['Acceleration'], errors='coerce')
+    df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
+
+    # Convert speed from km/h to m/s
+    df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
+
+    # Fetch values from config
+    mass = config.mass
+    g = 9.81  # acceleration due to gravity in m/s² (constant)
+    Kx = config.C0  # rolling resistance coefficient
+    Kr = config.C1  # aerodynamic drag coefficient
+
+    if mass is None or Kx is None or Kr is None:
+        st.error("Please set the values for 'mass', 'C0', and 'C1' in the config file.")
+        return
+
+    # Calculate tractive power
+    df['Tractive Power (W)'] = (mass * g * Kx * df['Speed (m/s)'] + 0.5 * Kr * df['Speed (m/s)'] ** 2) * df[
+        'Acceleration']
+
+    # Calculate time intervals
+    df['Time Interval (s)'] = df['Time'].diff().fillna(0)
+
+    # Calculate incremental energy consumption (in joules)
+    df['Energy Increment (J)'] = df['Tractive Power (W)'] * df['Time Interval (s)']
+
+    # Calculate cumulative energy (convert joules to kWh)
+    df['Cumulative Energy (kWh)'] = df['Energy Increment (J)'].cumsum() / (3600 * 1000)
+
+    # Create the cumulative energy plot
+    energyFig = go.Figure()
+
+    # Add Cumulative Energy trace
+    energyFig.add_trace(go.Scatter(
+        x=df['Time'], y=df['Cumulative Energy (kWh)'],
+        mode='lines', name='Cumulative Energy (kWh)',
+        line=dict(color='purple')
+    ))
+
+    # Update layout for the energy graph
+    energyFig.update_layout(
+        title="Cumulative Energy Consumption Over Time",
+        xaxis_title="Time (s)",
+        yaxis_title="Energy (kWh)",
+        legend=dict(x=0, y=1, traceorder="normal"),
+        template="plotly_white",
+        hovermode="x unified",
+    )
+
+    # Total energy consumption
+    total_energy = df['Cumulative Energy (kWh)'].iloc[-1]
+
+    # Streamlit output for energy consumption
+    st.header("Energy Consumption Graph")
+    st.write(f"**Total Energy Consumed:** {total_energy:.2f} kWh")
+
+    try:
+        st.plotly_chart(energyFig)  # Display the Energy Consumption graph
     except FileNotFoundError:
         st.error(f"File not found: {file_path}")
     except Exception as e:
