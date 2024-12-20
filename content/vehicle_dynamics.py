@@ -11,11 +11,16 @@ from calculations import (
     calculate_k1,
     calculate_k2,
     calculate_terminal_velocity,
-    calculate_time_to_terminal_velocity
+    calculate_time_to_terminal_velocity,
+    calculate_instantaneous_power,
+    calculate_terminal_power,
+    calculate_peak_power,
+    calculate_mean_power
 )
 from content.velocity_profile import (
     velocity_profile,
-    distance_profile
+    distance_profile,
+    tractive_power_profile
 )
 from constants import AIR_DENSITY, GRAVITY, C_DRAG
 
@@ -66,6 +71,7 @@ def vehicle_dynamics():
     k2 = calculate_k2(AIR_DENSITY, C_DRAG, frontal_area, mass, GRAVITY, C1)
     terminal_velocity = calculate_terminal_velocity(k1, k2)
     time_to_vt = calculate_time_to_terminal_velocity(k1, k2, terminal_velocity)
+
 
     # --- Results Display ---
     st.header("Calculation Results")
@@ -126,7 +132,7 @@ def vehicle_dynamics():
 
     st.subheader("6. Required Propulsion Power")
     if formula_mode:
-        st.latex(r"\text{Power} = F_{TR} \cdot v_{xT}")
+        st.latex(r"\text{Power} = F_{TR} \cdot V")
     st.success(f"Required Power: **{power_required / 1000:.2f} kW**")
     if debug_mode:
         st.write(f" - Traction Force (F_TR): {traction_force:.2f} N")
@@ -187,3 +193,7 @@ def vehicle_dynamics():
 
     st.subheader("12. Distance-Time Profile")
     distance_profile(debug_mode, k2, terminal_velocity)
+
+
+    st.subheader("13. Tractive Power Profile")
+    tractive_power_profile(debug_mode, traction_force, terminal_velocity, k1, k2, time_to_vt)

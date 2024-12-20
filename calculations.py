@@ -59,3 +59,25 @@ def calculate_distance_traversed(k2, terminal_velocity, time_array):
     k2_vt_t = k2 * terminal_velocity * time_array
     distance = (1 / k2) * np.log(np.cosh(k2_vt_t))
     return distance
+
+
+def calculate_instantaneous_power(f_tr, terminal_velocity, k2, time_array):
+
+    return f_tr * terminal_velocity * np.tanh(k2 * terminal_velocity * time_array)
+
+
+def calculate_terminal_power(f_tr, terminal_velocity):
+    return f_tr * terminal_velocity
+
+
+def calculate_peak_power(f_tr, terminal_velocity, k1, k2, tf):
+    sqrt_k1_k2 = np.sqrt(k1 * k2)
+    pt = f_tr * terminal_velocity
+    return pt * np.tanh(sqrt_k1_k2 * tf)
+
+
+def calculate_mean_power(f_tr, terminal_velocity, k1, k2, tf):
+    sqrt_k1_k2 = np.sqrt(k1 * k2)
+    pt = f_tr * terminal_velocity
+    ln_cosh = np.log(np.cosh(sqrt_k1_k2 * tf))
+    return (pt / (tf * sqrt_k1_k2)) * ln_cosh

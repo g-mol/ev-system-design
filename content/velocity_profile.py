@@ -1,7 +1,13 @@
 import streamlit as st
 import plotly.graph_objs as go
 import numpy as np
-from calculations import calculate_velocity_profile
+from calculations import (
+    calculate_velocity_profile,
+    calculate_instantaneous_power,
+    calculate_terminal_power,
+    calculate_peak_power,
+    calculate_mean_power
+)
 
 
 def velocity_profile(debug_mode, k1, k2):
@@ -79,3 +85,67 @@ def distance_profile(debug_mode, k2, terminal_velocity):
         st.write(f" - K2: {k2:.5f}")
         st.write(f" - Terminal Velocity (V_T): {terminal_velocity:.2f} m/s")
         st.write(f" - Distance at 80s: {distance_profile_m[-1]:.2f} m")
+
+
+def tractive_power_profile(debug_mode, f_tr, terminal_velocity, k1, k2, tf):
+    # Generate time array
+    time_array = np.linspace(0, tf, 100)
+
+    # Calculate Instantaneous Power
+    instantaneous_power = calculate_instantaneous_power(f_tr, terminal_velocity, k2, time_array)
+
+    # Calculate Terminal Power
+    terminal_power = calculate_terminal_power(f_tr, terminal_velocity)
+
+    # Calculate Peak Tractive Power at t_f
+    peak_power = calculate_peak_power(f_tr, terminal_velocity, k1, k2, tf)
+
+    # Calculate Mean Tractive Power over interval
+    mean_power = calculate_mean_power(f_tr, terminal_velocity, k1, k2, tf)
+
+    # --- Plotly Graph ---
+    power_fig = go.Figure()
+
+    # Instantaneous Power Plot
+    power_fig.add_trace(go.Scatter(
+        x=time_array,
+        y=instantaneous_power / 1000,  # Convert to kW
+        mode='lines',
+        name='Instantaneous Power (P_TR(t))',
+        line=dict(color='red')
+    ))
+
+    # Terminal Power (Horizontal Line)
+    power_fig.add_trace(go.Scatter(
+        x=[0, time_array[-1]],
+        y=[terminal_power / 1000, terminal_power / 1000],  # Convert to kW
+        mode='lines',
+        name='Terminal Power (P_T)',
+        line=dict(color='blue', dash='dash')
+    ))
+
+    # Customize Layout
+    power_fig.update_layout(
+        title='Tractive Power Over Time',
+        xaxis_title='Time (s)',
+        yaxis_title='Power (kW)',
+        template='plotly_white',
+        showlegend=True
+    )
+
+    st.plotly_chart(power_fig, use_container_width=True)
+
+    # Display Results
+    st.write("### Tractive Power Calculations")
+    st.success(f"**Terminal Power (P_T):** {terminal_power / 1000:.2f} kW")
+    st.success(f"**Peak Tractive Power (P_TRpk):** {peak_power / 1000:.2f} kW")
+    st.success(f"**Mean Tractive Power (P̄_TR):** {mean_power / 1000:.2f} kW")
+
+    # Debugging Information
+    if debug_mode:
+        st.write("### Debug Information for Tractive Power Profile")
+        st.write(f" - Tractive Force (F_TR): {f_tr:.2f} N")
+        st.write(f" - Terminal Velocity (V_T): {terminal_velocity:.2f} m/s")
+        st.write(f" - K1: {k1:.5f}")
+        st.write(f" - K2: {k2:.5f}")
+        st.write(f" - Time to Desired Velocity (t_f): {tf:.2f} s")
