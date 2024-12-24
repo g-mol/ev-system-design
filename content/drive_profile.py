@@ -1,8 +1,15 @@
+import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.graph_objs as go
 import config
 import constants
+from calculations import (
+    calculate_rolling_resistance_force,
+    calculate_aerodynamic_drag_force,
+    calculate_gravitational_force,
+    calculate_power_required
+)
 
 
 def drive_profile():
@@ -79,64 +86,8 @@ def drive_profile():
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
+
 def distance_profile():
-        file_path = 'wltc_drive_profile_low.csv'
-
-        # Load the CSV file
-        df = pd.read_csv(
-            file_path, sep=';', usecols=[1, 3, 4],
-            names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
-        )
-
-        # Ensure numeric conversion for necessary columns
-        df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')
-        df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
-
-        # Convert speed from km/h to m/s
-        df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
-
-        # Calculate time intervals
-        df['Time Interval (s)'] = df['Time'].diff().fillna(0)
-
-        # Calculate incremental and total distance
-        df['Distance Increment (m)'] = df['Speed (m/s)'] * df['Time Interval (s)']
-        df['Total Distance (m)'] = df['Distance Increment (m)'].cumsum()
-
-        # Create the Total Distance plot
-        distanceFig = go.Figure()
-
-        # Add Total Distance trace
-        distanceFig.add_trace(go.Scatter(
-            x=df['Time'], y=df['Total Distance (m)'],
-            mode='lines', name='Total Distance (m)',
-            line=dict(color='green')
-        ))
-
-        # Update layout for the distance graph
-        distanceFig.update_layout(
-            title="Total Distance Traveled",
-            xaxis_title="Time (s)",
-            yaxis_title="Distance (m)",
-            legend=dict(x=0, y=1, traceorder="normal"),
-            template="plotly_white",
-            hovermode="x unified",
-        )
-
-        # Total distance
-        total_distance = df['Total Distance (m)'].iloc[-1]
-
-        # Streamlit output
-        st.header("Total Distance Traveled Graph")
-        st.write(f"**Total Distance Traveled:** {total_distance:.2f} meters")
-
-        try:
-            st.plotly_chart(distanceFig)  # Display the Total Distance graph
-        except FileNotFoundError:
-            st.error(f"File not found: {file_path}")
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-
-def tractive_power():
     file_path = 'wltc_drive_profile_low.csv'
 
     # Load the CSV file
@@ -147,116 +98,275 @@ def tractive_power():
 
     # Ensure numeric conversion for necessary columns
     df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')
-    df['Acceleration'] = pd.to_numeric(df['Acceleration'], errors='coerce')
     df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
 
     # Convert speed from km/h to m/s
     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
-
-    # Calculate tractive power
-    df['Tractive Power (W)'] = (config.mass * constants.GRAVITY * config.k1 * df['Speed (m/s)'] + 0.5 * config.k1 * df['Speed (m/s)'] ** 2) * df[
-        'Acceleration']
-
-    # Create the tractive power plot
-    powerFig = go.Figure()
-
-    # Add Tractive Power trace
-    powerFig.add_trace(go.Scatter(
-        x=df['Time'], y=df['Tractive Power (W)'],
-        mode='lines', name='Tractive Power (W)',
-        line=dict(color='red')
-    ))
-
-    # Update layout for the power graph
-    powerFig.update_layout(
-        title="Tractive Power Over Time",
-        xaxis_title="Time (s)",
-        yaxis_title="Tractive Power (W)",
-        legend=dict(x=0, y=1, traceorder="normal"),
-        template="plotly_white",
-        hovermode="x unified",
-    )
-
-    # Streamlit output for tractive power
-    st.header("Tractive Power Graph")
-
-    try:
-        st.plotly_chart(powerFig)  # Display the Tractive Power graph
-    except FileNotFoundError:
-        st.error(f"File not found: {file_path}")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-
-def energy_consumption():
-    file_path = 'wltc_drive_profile_low.csv'
-
-    # Load the CSV file
-    df = pd.read_csv(
-        file_path, sep=';', usecols=[1, 3, 4],
-        names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
-    )
-
-    # Ensure numeric conversion for necessary columns
-    df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')
-    df['Acceleration'] = pd.to_numeric(df['Acceleration'], errors='coerce')
-    df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
-
-    # Convert speed from km/h to m/s
-    df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
-
-    # Fetch values from config
-    mass = config.mass
-    g = 9.81  # acceleration due to gravity in m/s² (constant)
-    Kx = config.C0  # rolling resistance coefficient
-    Kr = config.C1  # aerodynamic drag coefficient
-
-    if mass is None or Kx is None or Kr is None:
-        st.error("Please set the values for 'mass', 'C0', and 'C1' in the config file.")
-        return
-
-    # Calculate tractive power
-    df['Tractive Power (W)'] = (mass * g * Kx * df['Speed (m/s)'] + 0.5 * Kr * df['Speed (m/s)'] ** 2) * df[
-        'Acceleration']
 
     # Calculate time intervals
     df['Time Interval (s)'] = df['Time'].diff().fillna(0)
 
-    # Calculate incremental energy consumption (in joules)
-    df['Energy Increment (J)'] = df['Tractive Power (W)'] * df['Time Interval (s)']
+    # Calculate incremental and total distance
+    df['Distance Increment (m)'] = df['Speed (m/s)'] * df['Time Interval (s)']
+    df['Total Distance (m)'] = df['Distance Increment (m)'].cumsum()
 
-    # Calculate cumulative energy (convert joules to kWh)
-    df['Cumulative Energy (kWh)'] = df['Energy Increment (J)'].cumsum() / (3600 * 1000)
+    # Create the Total Distance plot
+    distanceFig = go.Figure()
 
-    # Create the cumulative energy plot
-    energyFig = go.Figure()
-
-    # Add Cumulative Energy trace
-    energyFig.add_trace(go.Scatter(
-        x=df['Time'], y=df['Cumulative Energy (kWh)'],
-        mode='lines', name='Cumulative Energy (kWh)',
-        line=dict(color='purple')
+    # Add Total Distance trace
+    distanceFig.add_trace(go.Scatter(
+        x=df['Time'], y=df['Total Distance (m)'],
+        mode='lines', name='Total Distance (m)',
+        line=dict(color='green')
     ))
 
-    # Update layout for the energy graph
-    energyFig.update_layout(
-        title="Cumulative Energy Consumption Over Time",
+    # Update layout for the distance graph
+    distanceFig.update_layout(
+        title="Total Distance Traveled",
         xaxis_title="Time (s)",
-        yaxis_title="Energy (kWh)",
+        yaxis_title="Distance (m)",
         legend=dict(x=0, y=1, traceorder="normal"),
         template="plotly_white",
         hovermode="x unified",
     )
 
-    # Total energy consumption
-    total_energy = df['Cumulative Energy (kWh)'].iloc[-1]
+    # Total distance
+    total_distance = df['Total Distance (m)'].iloc[-1]
 
-    # Streamlit output for energy consumption
-    st.header("Energy Consumption Graph")
-    st.write(f"**Total Energy Consumed:** {total_energy:.2f} kWh")
+    # Streamlit output
+    st.header("Total Distance Traveled Graph")
+    st.write(f"**Total Distance Traveled:** {total_distance:.2f} meters")
 
     try:
-        st.plotly_chart(energyFig)  # Display the Energy Consumption graph
+        st.plotly_chart(distanceFig)  # Display the Total Distance graph
     except FileNotFoundError:
         st.error(f"File not found: {file_path}")
     except Exception as e:
         st.error(f"An error occurred: {e}")
+
+
+def tractive_power_profile():
+    # Load drive profile
+    file_path = 'wltc_drive_profile_low.csv'
+    df = pd.read_csv(
+        file_path, sep=';', usecols=[1, 3, 4],
+        names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
+    )
+
+    # Ensure numeric conversion for necessary columns
+    df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
+    df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')  # Speed in km/h
+    df['Acceleration'] = pd.to_numeric(df['Acceleration'], errors='coerce')
+
+    # Convert speed to m/s
+    df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
+
+    # Constants
+    m = config.mass  # Vehicle mass (kg)
+    g = constants.GRAVITY  # Gravitational acceleration (m/s^2)
+    rho = constants.AIR_DENSITY  # Air density (kg/m^3)
+    C_D = constants.C_DRAG  # Drag coefficient
+    A_F = config.frontal_area  # Frontal area (m^2)
+    C0 = config.C0  # Static rolling resistance coefficient
+    C1 = config.C1  # Speed-dependent rolling resistance coefficient
+
+    # Velocity profile
+    v = df['Speed (m/s)']
+    dv_dt = df['Acceleration']
+
+    # Calculate forces
+    rolling_resistance_force = m * g * (C0 + C1 * v ** 2)
+    aerodynamic_drag_force = 0.5 * rho * C_D * A_F * v ** 2
+    inertial_force = m * dv_dt
+
+    # Total tractive force
+    df['Tractive Force (N)'] = inertial_force + aerodynamic_drag_force + rolling_resistance_force
+
+    # Tractive power
+    df['Tractive Power (W)'] = df['Tractive Force (N)'] * v
+    df['Tractive Power (kW)'] = df['Tractive Power (W)'] / 1000
+
+    # --- Plotting ---
+    powerFig = go.Figure()
+
+    # Add Tractive Power trace
+    powerFig.add_trace(go.Scatter(
+        x=df['Time'], y=df['Tractive Power (kW)'],
+        mode='lines', name='Tractive Power (kW)',
+        line=dict(color='red')
+    ))
+
+    # Update Layout
+    powerFig.update_layout(
+        title="Tractive Power Over Time",
+        xaxis_title="Time (s)",
+        yaxis_title="Tractive Power (kW)",
+        template="plotly_white",
+        legend=dict(x=0, y=1, traceorder="normal"),
+        hovermode="x unified",
+    )
+
+    # Display the plot
+    st.header("Tractive Power Graph")
+    st.plotly_chart(powerFig, use_container_width=True)
+
+
+def required_energy_profile():
+    # Load drive profile
+    file_path = 'wltc_drive_profile_low.csv'
+    df = pd.read_csv(
+        file_path, sep=';', usecols=[1, 3, 4],
+        names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
+    )
+
+    # Convert speed to m/s
+    df['Speed (m/s)'] = df['Speed'] * 1000 / 3600  # km/h to m/s
+
+    # Calculate dynamic tractive force F_TR(t)
+    df['Aerodynamic Drag (N)'] = 0.5 * constants.AIR_DENSITY * constants.C_DRAG * config.frontal_area * df['Speed (m/s)'] ** 2
+    df['Rolling Resistance (N)'] = config.mass * constants.GRAVITY * (config.C0 + config.C1 * df['Speed (m/s)'] ** 2)
+    df['Inertial Force (N)'] = config.mass * df['Acceleration']  # m * dv/dt
+    df['Tractive Force (N)'] = df['Aerodynamic Drag (N)'] + df['Rolling Resistance (N)'] + df['Inertial Force (N)']
+
+    # Calculate instantaneous power P_TR(t) = F_TR * v(t)
+    df['Tractive Power (W)'] = df['Tractive Force (N)'] * df['Speed (m/s)']
+
+    # Integrate power over time to calculate energy
+    df['Time Interval (s)'] = df['Time'].diff().fillna(0)  # Time intervals
+    df['Energy Increment (J)'] = df['Tractive Power (W)'] * df['Time Interval (s)']  # Incremental energy
+    df['Total Energy (J)'] = df['Energy Increment (J)'].cumsum()  # Cumulative energy
+
+    # Convert total energy to kWh for readability
+    df['Total Energy (kWh)'] = df['Total Energy (J)'] / (3.6e6)
+
+    # Calculate distance traveled (m and km)
+    df['Distance Increment (m)'] = df['Speed (m/s)'] * df['Time Interval (s)']
+    df['Total Distance (m)'] = df['Distance Increment (m)'].cumsum()
+    df['Total Distance (km)'] = df['Total Distance (m)'] / 1000  # Convert to km
+
+    # --- Statistics ---
+    total_energy_kwh = df['Total Energy (kWh)'].iloc[-1]
+    total_distance_km = df['Total Distance (km)'].iloc[-1]
+    avg_power_kw = df['Tractive Power (W)'].mean() / 1000  # Average power in kW
+    kwh_per_km = total_energy_kwh / total_distance_km if total_distance_km > 0 else float('inf')  # Energy per km
+
+    # --- Plotly Graph ---
+    energy_fig = go.Figure()
+
+    # Add Total Energy trace
+    energy_fig.add_trace(go.Scatter(
+        x=df['Time'],
+        y=df['Total Energy (kWh)'],
+        mode='lines',
+        name='Total Energy (kWh)',
+        line=dict(color='green')
+    ))
+
+    # Customize layout
+    energy_fig.update_layout(
+        title='Energy-Time Profile',
+        xaxis_title='Time (s)',
+        yaxis_title='Energy (kWh)',
+        template='plotly_white'
+    )
+
+    # Display in Streamlit
+    st.header("Energy-Time Profile")
+    st.plotly_chart(energy_fig, use_container_width=True)
+
+    # --- Display Statistics ---
+    st.subheader("Energy Usage Statistics")
+    st.write(f"**Total Energy Used:** {total_energy_kwh:.2f} kWh")
+    st.write(f"**Total Distance Traveled:** {total_distance_km:.2f} km")
+    st.write(f"**Energy Consumption per Kilometer:** {kwh_per_km:.2f} kWh/km")
+    st.write(f"**Average Power Usage:** {avg_power_kw:.2f} kW")
+    st.write(f"**Average Energy Efficiency:** {1 / kwh_per_km * 100:.2f} km/kWh" if kwh_per_km > 0 else "N/A")
+
+
+
+
+# def energy_usage_profile():
+#     # Load drive profile
+#     file_path = 'wltc_drive_profile_low.csv'
+#     df = pd.read_csv(
+#         file_path, sep=';', usecols=[1, 3, 4],
+#         names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
+#     )
+#
+#     # Calculate instantaneous power using P_TR(t) = F_TR * v(t)
+#     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600  # Convert speed to m/s
+#     df['Tractive Power (W)'] = config.traction_force * df['Speed (m/s)']  # Power in Watts
+#
+#     # Convert power to kW for better readability
+#     df['Tractive Power (kW)'] = df['Tractive Power (W)'] / 1000  # Convert to kW
+#
+#     # --- Plotly Graph ---
+#     power_usage_fig = go.Figure()
+#
+#     # Add Instantaneous Power trace
+#     power_usage_fig.add_trace(go.Scatter(
+#         x=df['Time'],
+#         y=df['Tractive Power (kW)'],
+#         mode='lines',
+#         name='Power Usage (kW)',
+#         line=dict(color='orange')
+#     ))
+#
+#     # Customize layout
+#     power_usage_fig.update_layout(
+#         title='Instantaneous Power Usage',
+#         xaxis_title='Time (s)',
+#         yaxis_title='Power (kW)',
+#         template='plotly_white',
+#         legend=dict(x=0, y=1, traceorder="normal"),
+#     )
+#
+#     # Display in Streamlit
+#     st.header("Instantaneous Power Usage Profile")
+#     st.plotly_chart(power_usage_fig, use_container_width=True)
+#
+#
+#
+# def required_energy_profile():
+#     # Load drive profile
+#     file_path = 'wltc_drive_profile_low.csv'
+#     df = pd.read_csv(
+#         file_path, sep=';', usecols=[1, 3, 4],
+#         names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
+#     )
+#
+#     # Calculate instantaneous power using P_TR(t) = F_TR * v(t)
+#     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600  # Convert speed to m/s
+#     df['Tractive Power (W)'] = config.traction_force * df['Speed (m/s)']
+#
+#     # Integrate power over time to calculate energy
+#     df['Time Interval (s)'] = df['Time'].diff().fillna(0)  # Time intervals
+#     df['Energy Increment (J)'] = df['Tractive Power (W)'] * df['Time Interval (s)']  # Incremental energy
+#     df['Total Energy (J)'] = df['Energy Increment (J)'].cumsum()  # Cumulative energy
+#
+#     # Convert total energy to kWh for readability
+#     df['Total Energy (kWh)'] = df['Total Energy (J)'] / (3.6e6)
+#
+#     # --- Plotly Graph ---
+#     energy_fig = go.Figure()
+#
+#     # Add Total Energy trace
+#     energy_fig.add_trace(go.Scatter(
+#         x=df['Time'],
+#         y=df['Total Energy (kWh)'],
+#         mode='lines',
+#         name='Total Energy (kWh)',
+#         line=dict(color='green')
+#     ))
+#
+#     # Customize layout
+#     energy_fig.update_layout(
+#         title='Energy-Time Profile',
+#         xaxis_title='Time (s)',
+#         yaxis_title='Energy (kWh)',
+#         template='plotly_white'
+#     )
+#
+#     # Display in Streamlit
+#     st.header("Energy-Time Profile")
+#     st.plotly_chart(energy_fig, use_container_width=True)

@@ -155,11 +155,3 @@ def tractive_power_profile(debug_mode, f_tr, terminal_velocity, k1, k2, tf):
     st.success(f"Peak Tractive Power (P_TRpk): **{peak_power / 1000:.2f} kW**")
     st.success(f"Mean Tractive Power (P̄_TR): **{mean_power / 1000:.2f} kW**")
 
-    # Debugging Information
-    if debug_mode:
-        st.write("### Debug Information for Tractive Power Profile")
-        st.write(f" - Tractive Force (F_TR): {f_tr:.2f} N")
-        st.write(f" - Terminal Velocity (V_T): {terminal_velocity:.2f} m/s")
-        st.write(f" - K1: {k1:.5f}")
-        st.write(f" - K2: {k2:.5f}")
-        st.write(f" - Time to Desired Velocity (t_f): {tf:.2f} s")
