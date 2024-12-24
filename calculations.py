@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from constants import AIR_DENSITY, GRAVITY, C_DRAG
+from config import AIR_DENSITY, GRAVITY, C_DRAG
 
 
 def calculate_rolling_resistance_force(mass, angle_rad, speed_mps=0, C0=None, C1=None):

@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objs as go
 import config
-import constants
 
 
 def drive_profile():
@@ -126,9 +125,9 @@ def tractive_power_profile(df):
 
     # Constants
     m = config.mass  # Vehicle mass (kg)
-    g = constants.GRAVITY  # Gravitational acceleration (m/s^2)
-    rho = constants.AIR_DENSITY  # Air density (kg/m^3)
-    C_D = constants.C_DRAG  # Drag coefficient
+    g = config.GRAVITY  # Gravitational acceleration (m/s^2)
+    rho = config.AIR_DENSITY  # Air density (kg/m^3)
+    C_D = config.C_DRAG  # Drag coefficient
     A_F = config.frontal_area  # Frontal area (m^2)
     C0 = config.C0  # Static rolling resistance coefficient
     C1 = config.C1  # Speed-dependent rolling resistance coefficient
@@ -176,8 +175,8 @@ def tractive_power_profile(df):
 
 def required_energy_profile(df):
     # Calculate dynamic tractive force F_TR(t)
-    df['Aerodynamic Drag (N)'] = 0.5 * constants.AIR_DENSITY * constants.C_DRAG * config.frontal_area * df['Speed (m/s)'] ** 2
-    df['Rolling Resistance (N)'] = config.mass * constants.GRAVITY * (config.C0 + config.C1 * df['Speed (m/s)'] ** 2)
+    df['Aerodynamic Drag (N)'] = 0.5 * config.AIR_DENSITY * config.C_DRAG * config.frontal_area * df['Speed (m/s)'] ** 2
+    df['Rolling Resistance (N)'] = config.mass * config.GRAVITY * (config.C0 + config.C1 * df['Speed (m/s)'] ** 2)
     df['Inertial Force (N)'] = config.mass * df['Acceleration']  # m * dv/dt
     df['Tractive Force (N)'] = df['Aerodynamic Drag (N)'] + df['Rolling Resistance (N)'] + df['Inertial Force (N)']
 
