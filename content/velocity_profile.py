@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.graph_objs as go
 import numpy as np
+import config
 from calculations import (
     calculate_velocity_profile,
     calculate_instantaneous_power,
@@ -11,7 +12,7 @@ from calculations import (
 )
 
 
-def velocity_profile(debug_mode, k1, k2):
+def velocity_profile(k1, k2):
     time_array = np.linspace(0, 80, 100)
 
     # Calculate the velocity profile
@@ -56,7 +57,7 @@ def velocity_profile(debug_mode, k1, k2):
     st.plotly_chart(velocity_fig, use_container_width=True)
 
     # Debugging Information
-    if debug_mode:
+    if config.debug_mode:
         st.write("### Debug Information for Velocity Profile")
         st.write(f" - K1: {k1:.5f}")
         st.write(f" - K2: {k2:.5f}")
@@ -64,7 +65,7 @@ def velocity_profile(debug_mode, k1, k2):
         st.write(f" - Maximum Velocity from Profile: {np.max(velocity_profile_kmh):.2f} km/h")
 
 
-def distance_profile(debug_mode, k2, terminal_velocity):
+def distance_profile(k2, terminal_velocity):
     # Generate time array
     time_array = np.linspace(0, 80, 100)  # From 0 to 80 seconds, 100 points
 
@@ -95,14 +96,14 @@ def distance_profile(debug_mode, k2, terminal_velocity):
     st.plotly_chart(distance_fig, use_container_width=True)
 
     # Debugging Information
-    if debug_mode:
+    if config.debug_mode:
         st.write("### Debug Information for Distance Traversed")
         st.write(f" - K2: {k2:.5f}")
         st.write(f" - Terminal Velocity (V_T): {terminal_velocity:.2f} m/s")
         st.write(f" - Distance at 80s: {distance_profile_m[-1]:.2f} m")
 
 
-def tractive_power_profile(debug_mode, f_tr, terminal_velocity, k1, k2, tf):
+def tractive_power_profile(f_tr, terminal_velocity, k1, k2, tf):
     # Generate time array
     time_array = np.linspace(0, tf, 100)
 
@@ -154,4 +155,3 @@ def tractive_power_profile(debug_mode, f_tr, terminal_velocity, k1, k2, tf):
     st.success(f"Terminal Power (P_T): **{terminal_power / 1000:.2f} kW**")
     st.success(f"Peak Tractive Power (P_TRpk): **{peak_power / 1000:.2f} kW**")
     st.success(f"Mean Tractive Power (P̄_TR): **{mean_power / 1000:.2f} kW**")
-
