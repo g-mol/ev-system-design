@@ -1,15 +1,8 @@
-import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.graph_objs as go
 import config
 import constants
-from calculations import (
-    calculate_rolling_resistance_force,
-    calculate_aerodynamic_drag_force,
-    calculate_gravitational_force,
-    calculate_power_required
-)
 
 
 def drive_profile():
@@ -20,11 +13,17 @@ def drive_profile():
         names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
     )
 
-    # Ensure numeric conversion for necessary columns
     df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')
     df['Acceleration'] = pd.to_numeric(df['Acceleration'], errors='coerce')
     df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
 
+    speed_and_acceleration_profile(df)
+    distance_profile(df)
+    tractive_power_profile(df)
+    required_energy_profile(df)
+
+
+def speed_and_acceleration_profile(df):
     # Create the interactive plot
     speedFig = go.Figure()
     accFig = go.Figure()
@@ -71,35 +70,16 @@ def drive_profile():
         "This is the Worldwide Harmonized Light Vehicles Test Cycle with the 'extra high' phase replaced with a "
         "second 'low' phase to make it more fitting for urban driving.")
 
-    st.warning("No vehicle data is used here yet, this is just the drive profile")
-
     st.header("Speed and Acceleration Graph")
     st.write(f"**Total Drive Time:** {total_time / 60:.0f} minutes -> {total_time} seconds")
     st.write(f"**Maximum Velocity:** {max_velocity:.2f} km/h")
     st.write(f"**Average Velocity:** {average_velocity:.2f} km/h")
 
-    try:
-        st.plotly_chart(speedFig)  # Display the graph in Streamlit
-        st.plotly_chart(accFig)  # Display the graph in Streamlit
-    except FileNotFoundError:
-        st.error(f"File not found: {file_path}")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+    st.plotly_chart(speedFig)
+    st.plotly_chart(accFig)
 
 
-def distance_profile():
-    file_path = 'wltc_drive_profile_low.csv'
-
-    # Load the CSV file
-    df = pd.read_csv(
-        file_path, sep=';', usecols=[1, 3, 4],
-        names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
-    )
-
-    # Ensure numeric conversion for necessary columns
-    df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')
-    df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
-
+def distance_profile(df):
     # Convert speed from km/h to m/s
     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
 
@@ -137,27 +117,10 @@ def distance_profile():
     st.header("Total Distance Traveled Graph")
     st.write(f"**Total Distance Traveled:** {total_distance:.2f} meters")
 
-    try:
-        st.plotly_chart(distanceFig)  # Display the Total Distance graph
-    except FileNotFoundError:
-        st.error(f"File not found: {file_path}")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+    st.plotly_chart(distanceFig)
 
 
-def tractive_power_profile():
-    # Load drive profile
-    file_path = 'wltc_drive_profile_low.csv'
-    df = pd.read_csv(
-        file_path, sep=';', usecols=[1, 3, 4],
-        names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
-    )
-
-    # Ensure numeric conversion for necessary columns
-    df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
-    df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')  # Speed in km/h
-    df['Acceleration'] = pd.to_numeric(df['Acceleration'], errors='coerce')
-
+def tractive_power_profile(df):
     # Convert speed to m/s
     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
 
@@ -211,17 +174,7 @@ def tractive_power_profile():
     st.plotly_chart(powerFig, use_container_width=True)
 
 
-def required_energy_profile():
-    # Load drive profile
-    file_path = 'wltc_drive_profile_low.csv'
-    df = pd.read_csv(
-        file_path, sep=';', usecols=[1, 3, 4],
-        names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
-    )
-
-    # Convert speed to m/s
-    df['Speed (m/s)'] = df['Speed'] * 1000 / 3600  # km/h to m/s
-
+def required_energy_profile(df):
     # Calculate dynamic tractive force F_TR(t)
     df['Aerodynamic Drag (N)'] = 0.5 * constants.AIR_DENSITY * constants.C_DRAG * config.frontal_area * df['Speed (m/s)'] ** 2
     df['Rolling Resistance (N)'] = config.mass * constants.GRAVITY * (config.C0 + config.C1 * df['Speed (m/s)'] ** 2)
@@ -281,92 +234,3 @@ def required_energy_profile():
     st.write(f"**Energy Consumption per Kilometer:** {kwh_per_km:.2f} kWh/km")
     st.write(f"**Average Power Usage:** {avg_power_kw:.2f} kW")
     st.write(f"**Average Energy Efficiency:** {1 / kwh_per_km * 100:.2f} km/kWh" if kwh_per_km > 0 else "N/A")
-
-
-
-
-# def energy_usage_profile():
-#     # Load drive profile
-#     file_path = 'wltc_drive_profile_low.csv'
-#     df = pd.read_csv(
-#         file_path, sep=';', usecols=[1, 3, 4],
-#         names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
-#     )
-#
-#     # Calculate instantaneous power using P_TR(t) = F_TR * v(t)
-#     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600  # Convert speed to m/s
-#     df['Tractive Power (W)'] = config.traction_force * df['Speed (m/s)']  # Power in Watts
-#
-#     # Convert power to kW for better readability
-#     df['Tractive Power (kW)'] = df['Tractive Power (W)'] / 1000  # Convert to kW
-#
-#     # --- Plotly Graph ---
-#     power_usage_fig = go.Figure()
-#
-#     # Add Instantaneous Power trace
-#     power_usage_fig.add_trace(go.Scatter(
-#         x=df['Time'],
-#         y=df['Tractive Power (kW)'],
-#         mode='lines',
-#         name='Power Usage (kW)',
-#         line=dict(color='orange')
-#     ))
-#
-#     # Customize layout
-#     power_usage_fig.update_layout(
-#         title='Instantaneous Power Usage',
-#         xaxis_title='Time (s)',
-#         yaxis_title='Power (kW)',
-#         template='plotly_white',
-#         legend=dict(x=0, y=1, traceorder="normal"),
-#     )
-#
-#     # Display in Streamlit
-#     st.header("Instantaneous Power Usage Profile")
-#     st.plotly_chart(power_usage_fig, use_container_width=True)
-#
-#
-#
-# def required_energy_profile():
-#     # Load drive profile
-#     file_path = 'wltc_drive_profile_low.csv'
-#     df = pd.read_csv(
-#         file_path, sep=';', usecols=[1, 3, 4],
-#         names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
-#     )
-#
-#     # Calculate instantaneous power using P_TR(t) = F_TR * v(t)
-#     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600  # Convert speed to m/s
-#     df['Tractive Power (W)'] = config.traction_force * df['Speed (m/s)']
-#
-#     # Integrate power over time to calculate energy
-#     df['Time Interval (s)'] = df['Time'].diff().fillna(0)  # Time intervals
-#     df['Energy Increment (J)'] = df['Tractive Power (W)'] * df['Time Interval (s)']  # Incremental energy
-#     df['Total Energy (J)'] = df['Energy Increment (J)'].cumsum()  # Cumulative energy
-#
-#     # Convert total energy to kWh for readability
-#     df['Total Energy (kWh)'] = df['Total Energy (J)'] / (3.6e6)
-#
-#     # --- Plotly Graph ---
-#     energy_fig = go.Figure()
-#
-#     # Add Total Energy trace
-#     energy_fig.add_trace(go.Scatter(
-#         x=df['Time'],
-#         y=df['Total Energy (kWh)'],
-#         mode='lines',
-#         name='Total Energy (kWh)',
-#         line=dict(color='green')
-#     ))
-#
-#     # Customize layout
-#     energy_fig.update_layout(
-#         title='Energy-Time Profile',
-#         xaxis_title='Time (s)',
-#         yaxis_title='Energy (kWh)',
-#         template='plotly_white'
-#     )
-#
-#     # Display in Streamlit
-#     st.header("Energy-Time Profile")
-#     st.plotly_chart(energy_fig, use_container_width=True)

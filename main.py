@@ -1,8 +1,6 @@
 import streamlit as st
 from content.vehicle_dynamics import vehicle_dynamics
-from content.drive_profile import (
-    drive_profile, distance_profile, tractive_power_profile, required_energy_profile
-)
+from content.drive_profile import drive_profile
 
 # Title and Description
 st.title("Electric Vehicle System Design Tool")
@@ -14,6 +12,3 @@ with tabs[0]:
 
 with tabs[1]:
     drive_profile()
-    distance_profile()
-    tractive_power_profile()
-    required_energy_profile()
