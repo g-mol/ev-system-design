@@ -19,7 +19,7 @@ from calculations import (
 )
 
 # Directory and file paths
-PROFILES_DIR = "profiles"
+PROFILES_DIR = "vehicles"
 CURRENT_CONFIG_FILE = os.path.join(PROFILES_DIR, "current.json")
 
 # Ensure directories exist
@@ -27,22 +27,6 @@ os.makedirs(PROFILES_DIR, exist_ok=True)
 
 
 def load_current_config():
-    # profiles = [f for f in os.listdir(PROFILES_DIR) if f.endswith(".json") and f != "current.json"]
-    # if profiles:
-    #     # Load the first profile
-    #     profile_path = os.path.join(PROFILES_DIR, profiles[0])
-    #     with open(profile_path, "r") as f:
-    #         current_config = json.load(f)
-    #     # Save this profile as the current configuration
-    #     save_current_config(current_config)
-    #
-    #     config.mass = current_config.get("mass", 2570)
-    #     config.top_speed = current_config.get("top_speed", 100)
-    #     config.time_to_100 = current_config.get("time_to_100", 12.0)
-    #     config.vehicle_height = current_config.get("vehicle_height", 3.0)
-    #     config.vehicle_width = current_config.get("vehicle_width", 2.5)
-    #     config.wheel_radius = current_config.get("wheel_radius", 0.3)
-
     """Load the current configuration from a JSON file and set values in config.py."""
     if os.path.exists(CURRENT_CONFIG_FILE):
         with open(CURRENT_CONFIG_FILE, "r") as f:
@@ -128,7 +112,7 @@ def sidebar_calculations():
     if "last_selected_profile" not in st.session_state:
         st.session_state["last_selected_profile"] = None
 
-    # Get a list of existing profiles
+    # Get a list of existing vehicles
     profiles = [f.replace(".json", "") for f in os.listdir(PROFILES_DIR) if f.endswith(".json")]
     profiles = [profile for profile in profiles if profile != "current"]
 

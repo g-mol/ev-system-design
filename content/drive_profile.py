@@ -1,12 +1,15 @@
+import os
 import pandas as pd
 import streamlit as st
 import plotly.graph_objs as go
 import config
 
 
-def drive_profile():
-    file_path = 'wltc_drive_profile_low.csv'
+DRIVE_PROFILES_DIR = "drive_profiles"
 
+
+def load_drive_profile(file_path):
+    """Load a drive profile CSV file."""
     df = pd.read_csv(
         file_path, sep=';', usecols=[1, 3, 4],
         names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
@@ -15,7 +18,29 @@ def drive_profile():
     df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')
     df['Acceleration'] = pd.to_numeric(df['Acceleration'], errors='coerce')
     df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
+    return df
 
+
+def drive_profile():
+    """Main function to handle drive profile selection and analysis."""
+
+    # --- Drive Profile Selection ---
+    # st.header("Drive Profile Selection")
+
+    # List available drive profiles
+    profiles = [f for f in os.listdir(DRIVE_PROFILES_DIR) if f.endswith('.csv')]
+
+    # Dropdown to select a drive profile
+    selected_profile = st.selectbox("Select Drive Profile", profiles)
+
+    # Load the selected drive profile
+    file_path = os.path.join(DRIVE_PROFILES_DIR, selected_profile)
+    df = load_drive_profile(file_path)
+
+    # Show selected profile details
+    # st.write(f"**Selected Drive Profile:** {selected_profile}")
+
+    # Plot and analyze the drive profile
     speed_and_acceleration_profile(df)
     distance_profile(df)
     tractive_power_profile(df)
@@ -64,10 +89,6 @@ def speed_and_acceleration_profile(df):
     total_time = df['Time'].max()
     max_velocity = df['Speed'].max()
     average_velocity = df['Speed'].mean()
-
-    st.write(
-        "This is the Worldwide Harmonized Light Vehicles Test Cycle with the 'extra high' phase replaced with a "
-        "second 'low' phase to make it more fitting for urban driving.")
 
     st.header("Speed and Acceleration Graph")
     st.write(f"**Total Drive Time:** {total_time / 60:.0f} minutes -> {total_time} seconds")
@@ -230,5 +251,5 @@ def required_energy_profile(df):
     st.write(f"**Total Energy Used:** {total_energy_kwh:.2f} kWh")
     st.write(f"**Total Distance Traveled:** {total_distance_km:.2f} km")
     st.write(f"**Average Energy Efficiency:** {1 / kwh_per_km:.2f} km/kWh" if kwh_per_km > 0 else "N/A")
-    st.write(f"**Energy Consumption per Kilometer:** {kwh_per_km:.2f} kWh/km")
+    st.write(f"**Energy Consumption per Kilometer:** {kwh_per_km * 1000:.0f} Wh/km")
     st.write(f"**Energy Consumption per 100 Kilometer:** {kwh_per_km * 100:.2f} kWh/100 km")
