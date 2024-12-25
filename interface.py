@@ -124,6 +124,10 @@ def sidebar_calculations():
     # --- Profile Management ---
     st.sidebar.header("Profile Management")
 
+    # Ensure session state for tracking the last selected profile
+    if "last_selected_profile" not in st.session_state:
+        st.session_state["last_selected_profile"] = None
+
     # Get a list of existing profiles
     profiles = [f.replace(".json", "") for f in os.listdir(PROFILES_DIR) if f.endswith(".json")]
     profiles = [profile for profile in profiles if profile != "current"]
@@ -131,25 +135,22 @@ def sidebar_calculations():
     # Dropdown to select a profile
     selected_profile = st.sidebar.selectbox("Select Profile", options=profiles, index=0)
 
+    # Load the profile only if it is different from the last selected profile
+    if selected_profile != st.session_state["last_selected_profile"]:
+        st.session_state["last_selected_profile"] = selected_profile  # Update the last selected profile
+        load_profile(selected_profile)  # Load the selected profile
+        st.rerun()  # Trigger a rerun to update the UI with the new profile values
+
     # Text input for saving a new profile
     profile_name = st.sidebar.text_input("New Profile Name")
 
-    # Buttons for Save and Load
+    # Save Profile Button
     if st.sidebar.button("Save Profile"):
         if profile_name.strip():
             save_profile(profile_name.strip())
             st.success(f"Profile '{profile_name.strip()}' saved!")
         else:
-            save_profile(selected_profile)
-            st.success(f"Profile '{selected_profile}' saved!")
-
-    if st.sidebar.button("Load Selected Profile"):
-        if selected_profile:
-            load_profile(selected_profile)
-            st.success(f"Profile '{selected_profile}' loaded!")
-        else:
-            st.error("Please select a profile to load!")
-
+            st.error("Please enter a valid profile name to save!")
 
     st.sidebar.header("Environmental Parameters")
     config.headwind_speed = st.sidebar.number_input("Headwind Speed (km/h)", min_value=0, max_value=100, value=20)
