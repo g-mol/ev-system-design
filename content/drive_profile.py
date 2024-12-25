@@ -199,7 +199,6 @@ def required_energy_profile(df):
     # --- Statistics ---
     total_energy_kwh = df['Total Energy (kWh)'].iloc[-1]
     total_distance_km = df['Total Distance (km)'].iloc[-1]
-    avg_power_kw = df['Tractive Power (W)'].mean() / 1000  # Average power in kW
     kwh_per_km = total_energy_kwh / total_distance_km if total_distance_km > 0 else float('inf')  # Energy per km
 
     # --- Plotly Graph ---
@@ -230,6 +229,6 @@ def required_energy_profile(df):
     st.subheader("Energy Usage Statistics")
     st.write(f"**Total Energy Used:** {total_energy_kwh:.2f} kWh")
     st.write(f"**Total Distance Traveled:** {total_distance_km:.2f} km")
+    st.write(f"**Average Energy Efficiency:** {1 / kwh_per_km:.2f} km/kWh" if kwh_per_km > 0 else "N/A")
     st.write(f"**Energy Consumption per Kilometer:** {kwh_per_km:.2f} kWh/km")
-    st.write(f"**Average Power Usage:** {avg_power_kw:.2f} kW")
-    st.write(f"**Average Energy Efficiency:** {1 / kwh_per_km * 100:.2f} km/kWh" if kwh_per_km > 0 else "N/A")
+    st.write(f"**Energy Consumption per 100 Kilometer:** {kwh_per_km * 100:.2f} kWh/100 km")
