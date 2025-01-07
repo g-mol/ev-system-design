@@ -188,6 +188,8 @@ def tractive_power():
         st.error(f"An error occurred: {e}")
 
 def energy_consumption():
+    import config
+
     file_path = 'wltc_drive_profile_low.csv'
 
     # Load the CSV file
@@ -204,33 +206,27 @@ def energy_consumption():
     # Convert speed from km/h to m/s
     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
 
-    # Fetch values from config
-    mass = config.mass
-    g = 9.81  # acceleration due to gravity in m/s² (constant)
-    Kx = config.C0  # rolling resistance coefficient
-    Kr = config.C1  # aerodynamic drag coefficient
-
-    if mass is None or Kx is None or Kr is None:
-        st.error("Please set the values for 'mass', 'C0', and 'C1' in the config file.")
-        return
-
     # Calculate tractive power
-    df['Tractive Power (W)'] = (mass * g * Kx * df['Speed (m/s)'] + 0.5 * Kr * df['Speed (m/s)'] ** 2) * df[
-        'Acceleration']
+    g = 9.81  # acceleration due to gravity in m/s²
+    df['Tractive Power (W)'] = (
+        config.mass * g * config.C0 * df['Speed (m/s)']
+        + 0.5 * config.C1 * df['Speed (m/s)'] ** 2
+    ) * df['Acceleration']
 
     # Calculate time intervals
     df['Time Interval (s)'] = df['Time'].diff().fillna(0)
 
-    # Calculate incremental energy consumption (in joules)
-    df['Energy Increment (J)'] = df['Tractive Power (W)'] * df['Time Interval (s)']
+    # Convert time intervals to hours
+    df['Time Interval (h)'] = df['Time Interval (s)'] / 3600
 
-    # Calculate cumulative energy (convert joules to kWh)
-    df['Cumulative Energy (kWh)'] = df['Energy Increment (J)'].cumsum() / (3600 * 1000)
+    # Calculate incremental and cumulative energy
+    df['Incremental Energy (kWh)'] = (df['Tractive Power (W)'] / 1000) * df['Time Interval (h)']
+    df['Cumulative Energy (kWh)'] = df['Incremental Energy (kWh)'].cumsum()
 
-    # Create the cumulative energy plot
+    # Create the cumulative energy consumption plot
     energyFig = go.Figure()
 
-    # Add Cumulative Energy trace
+    # Add cumulative energy trace
     energyFig.add_trace(go.Scatter(
         x=df['Time'], y=df['Cumulative Energy (kWh)'],
         mode='lines', name='Cumulative Energy (kWh)',
@@ -248,7 +244,7 @@ def energy_consumption():
     )
 
     # Total energy consumption
-    total_energy = df['Cumulative Energy (kWh)'].iloc[-1]
+    total_energy = df['Cumulative Energy (kWh)'].iloc[1]
 
     # Streamlit output for energy consumption
     st.header("Energy Consumption Graph")
@@ -260,3 +256,4 @@ def energy_consumption():
         st.error(f"File not found: {file_path}")
     except Exception as e:
         st.error(f"An error occurred: {e}")
+

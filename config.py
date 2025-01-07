@@ -38,3 +38,4 @@ k2 = None
 # Terminal Velocity and Time to Reach
 terminal_velocity = None
 time_to_vt = None
+
