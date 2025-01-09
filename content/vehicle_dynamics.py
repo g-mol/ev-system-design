@@ -11,6 +11,7 @@ from content.velocity_profile import (
 
 def vehicle_dynamics():
     st.title("Vehicle Dynamics")
+    st.markdown("---")
 
     # --- Results Display ---
     st.header("Calculation Results")

@@ -1,7 +1,6 @@
 import streamlit as st
 import math
 import config
-from config import AIR_DENSITY, GRAVITY, C_DRAG
 from calculations import (
     calculate_rolling_resistance_force,
     calculate_gravitational_force,
@@ -13,8 +12,9 @@ from calculations import (
     calculate_torque_required,
 )
 
+
 def scenarios():
-    st.title("Vehicle Scenarios: Power and Torque Requirements")
+    st.title("Vehicle Scenarios")
     st.markdown("---")
 
     scenarios = [

@@ -24,6 +24,9 @@ def load_drive_profile(file_path):
 def drive_profile():
     """Main function to handle drive profile selection and analysis."""
 
+    st.title("Drive Profile")
+    st.markdown("---")
+
     # --- Drive Profile Selection ---
     # st.header("Drive Profile Selection")
 
