@@ -90,7 +90,7 @@ def sidebar_calculations():
 
     # Vehicle Inputs
     config.mass = st.sidebar.number_input("Vehicle Mass (kg)", min_value=500, max_value=5000, value=config.mass)
-    config.top_speed = st.sidebar.number_input("Top Speed (km/h)", min_value=50, max_value=400, value=config.top_speed)
+    config.top_speed = st.sidebar.number_input("Top Speed (km/h)", min_value=0, max_value=400, value=config.top_speed)
     config.time_to_100 = st.sidebar.number_input("Time to 100 km/h (s)", min_value=1.0, max_value=30.0,
                                                  value=config.time_to_100,
                                                  step=0.1)
