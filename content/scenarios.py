@@ -76,13 +76,8 @@ def scenarios():
                 torque_required = calculate_torque_required(power_required, angular_velocity)
 
             with col2:
-                st.markdown(
-                    f"<div style='padding:10px; border: 1px solid #ddd; border-radius: 10px; background-color: #E8F9EE;'>"
-                    f"<h4 style='color: #177233;'>Result</h4>"
-                    f"<p><strong>Required Propulsion Power:</strong> {power_required/1000:.2f} kW</p>"
-                    f"<p><strong>Required Torque:</strong> {torque_required:.2f} Nm</p>"
-                    f"</div>",
-                    unsafe_allow_html=True,
-                )
+                with st.container():
+                    st.success(f"**Required Propulsion Power:** {power_required/1000:.0f} kW")
+                    st.success(f"**Required Torque:** {torque_required:.0f} Nm")
 
             st.markdown("---")
