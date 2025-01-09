@@ -139,7 +139,6 @@ def distance_profile(df):
 
     st.plotly_chart(distanceFig)
 
-
 def tractive_power_profile(df):
     # Convert speed to m/s
     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
@@ -172,26 +171,47 @@ def tractive_power_profile(df):
     # --- Plotting ---
     powerFig = go.Figure()
 
-    # Add Tractive Power trace
+    # Add Tractive Force trace (Primary y-axis)
+    powerFig.add_trace(go.Scatter(
+        x=df['Time'], y=df['Tractive Force (N)'],
+        mode='lines', name='Tractive Force (N)',
+        line=dict(color='red'),
+        visible='legendonly'  # Hide from legend by default
+    ))
+
+    # Add Tractive Power trace (Secondary y-axis)
     powerFig.add_trace(go.Scatter(
         x=df['Time'], y=df['Tractive Power (kW)'],
         mode='lines', name='Tractive Power (kW)',
-        line=dict(color='red')
+        line=dict(color='blue'),
+        yaxis='y2',  # Bind this trace to the secondary y-axis
     ))
 
-    # Update Layout
+    # Update Layout for secondary y-axis
     powerFig.update_layout(
-        title="Tractive Power Over Time",
+        title="Tractive Power and Force Over Time",
         xaxis_title="Time (s)",
-        yaxis_title="Tractive Power (kW)",
+        yaxis=dict(
+            title="Tractive Power (kW)",
+            titlefont=dict(color="red"),
+            tickfont=dict(color="red"),
+        ),
+        yaxis2=dict(
+            title="Tractive Force (N)",
+            titlefont=dict(color="blue"),
+            tickfont=dict(color="blue"),
+            overlaying="y",  # Overlay on the primary y-axis
+            side="right",    # Position on the right side
+        ),
         template="plotly_white",
         legend=dict(x=0, y=1, traceorder="normal"),
         hovermode="x unified",
     )
 
     # Display the plot
-    st.header("Tractive Power Graph")
+    st.header("Tractive Power and Force Graph")
     st.plotly_chart(powerFig, use_container_width=True)
+
 
 
 def required_energy_profile(df):

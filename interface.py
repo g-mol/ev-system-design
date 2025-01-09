@@ -15,7 +15,9 @@ from calculations import (
     calculate_k1,
     calculate_k2,
     calculate_terminal_velocity,
-    calculate_time_to_terminal_velocity
+    calculate_time_to_terminal_velocity,
+    calculate_angular_velocity,
+    calculate_torque_required
 )
 
 # Directory and file paths
@@ -137,6 +139,9 @@ def sidebar_calculations():
             st.error("Please enter a valid profile name to save!")
 
     st.sidebar.header("Environmental Parameters")
+    config.current_speed = st.sidebar.number_input("Current Speed (km/h)", min_value=0, max_value=400, value=100)
+    config.current_acceleration = st.sidebar.number_input("Current Acceleration (m/s²)", min_value=0.0, max_value=20.0,
+                                                            value=1.5)
     config.headwind_speed = st.sidebar.number_input("Headwind Speed (km/h)", min_value=0, max_value=100, value=20)
     config.current_road_angle = st.sidebar.number_input("Current Road Angle (degrees)", min_value=0.0, max_value=45.0,
                                                         value=5.0)
@@ -154,23 +159,26 @@ def sidebar_calculations():
     # Convert Units
     config.top_speed_mps = config.top_speed / 3.6
     config.headwind_speed_mps = config.headwind_speed / 3.6
-    config.relative_speed = config.top_speed_mps + config.headwind_speed_mps
     config.road_angle_rad = math.radians(config.current_road_angle)
     config.frontal_area = config.vehicle_height * config.vehicle_width
-    config.acceleration = (27.78 / config.time_to_100)  # 100 km/h in m/s
+    config.time_to_100_acceleration = (27.78 / config.time_to_100)  # 100 km/h in m/s
+    config.current_speed_mps = config.current_speed / 3.6
+    config.relative_speed = config.current_speed_mps + config.headwind_speed_mps
 
     # Calculations
-    config.rolling_force = calculate_rolling_resistance_force(config.mass, config.road_angle_rad, config.top_speed_mps,
-                                                              config.C0, config.C1)
+    config.rolling_force = calculate_rolling_resistance_force(config.mass, config.road_angle_rad,
+                                                              config.current_speed_mps, config.C0, config.C1)
     config.gravitational_force = calculate_gravitational_force(config.mass, config.road_angle_rad)
     config.drag_force = calculate_aerodynamic_drag_force(config.relative_speed, config.frontal_area)
     config.road_load_force = calculate_road_load_force(config.rolling_force, config.gravitational_force,
                                                        config.drag_force)
-    config.traction_force = calculate_traction_force(config.road_load_force, config.mass, config.acceleration,
+    config.traction_force = calculate_traction_force(config.road_load_force, config.mass, config.current_acceleration,
                                                      config.km)
-    config.power_required = calculate_power_required(config.traction_force, config.top_speed_mps)
+    config.power_required = calculate_power_required(config.traction_force, config.current_speed_mps)
     config.required_tractive_force_near_zero = calculate_required_tractive_force_near_zero(config.mass,
                                                                                            config.gradeability_percent)
+    config.angular_velocity = calculate_angular_velocity(config.top_speed_mps, config.wheel_radius)
+    config.torque_required = calculate_torque_required(config.power_required, config.angular_velocity)
 
     # Constants
     config.k1 = calculate_k1(config.traction_force, config.mass, GRAVITY, config.C0)

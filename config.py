@@ -17,6 +17,8 @@ km = None
 current_road_angle = None
 vehicle_height = None
 vehicle_width = None
+current_speed = None
+current_acceleration = None
 headwind_speed = None
 wheel_radius = None
 gradeability_percent = None
@@ -29,7 +31,9 @@ headwind_speed_mps = None
 relative_speed = None
 road_angle_rad = None
 frontal_area = None
-acceleration = None
+time_to_100_acceleration = None
+current_speed_mps = None
+angular_velocity = None
 
 # Forces and Power
 rolling_force = None
@@ -39,6 +43,7 @@ road_load_force = None
 traction_force = None
 power_required = None
 required_tractive_force_near_zero = None
+torque_required = None
 
 # Constants K1 and K2
 k1 = None

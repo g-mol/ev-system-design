@@ -67,7 +67,7 @@ def vehicle_dynamics():
         st.write(f" - Rotational Inertia Coefficient (k_m): {config.km}")
         st.write(f" - Vehicle Mass (m): {config.mass} kg")
         st.write(f" - Time to 100 km/h: {config.time_to_100:.2f} s")
-        st.write(f" - Calculated Acceleration (a): {config.acceleration:.2f} m/s²")
+        st.write(f" - Calculated Acceleration (a): {config.current_acceleration:.2f} m/s²")
 
     st.subheader("6. Required Propulsion Power")
     if config.formula_mode:
@@ -77,7 +77,15 @@ def vehicle_dynamics():
         st.write(f" - Traction Force (F_TR): {config.traction_force:.2f} N")
         st.write(f" - Vehicle Speed (v_xT): {config.top_speed_mps:.2f} m/s")
 
-    st.subheader("7. Required Maximum Traction Force for Gradeability")
+    st.subheader("7. Required Torque")
+    if config.formula_mode:
+        st.latex(r"\text{Torque} = \frac{\text{Power}}{\omega}")
+    st.success(f"Required Torque: **{config.torque_required:.2f} Nm**")
+    if config.debug_mode:
+        st.write(f" - Required Power: {config.power_required:.2f} W")
+        st.write(f" - Angular Velocity (ω): {config.angular_velocity:.2f} rad/s")
+
+    st.subheader("8. Required Maximum Traction Force for Gradeability")
     if config.formula_mode:
         st.latex(r"F_{\text{TR}} = \frac{m \cdot g \cdot \tan(\beta)}{\sqrt{1 + \tan^2(\beta)}}")
     st.success(f"Required Tractive Force: **{config.required_tractive_force_near_zero / 1000:.2f} kN**")
@@ -88,7 +96,7 @@ def vehicle_dynamics():
             f" - Input Gradeability: {config.gradeability_percent:.2f} % -> {math.degrees(math.atan(config.gradeability_percent / 100)):.2f}° -> {math.atan(config.gradeability_percent / 100):.2f} rad")
 
     # --- K1 Calculation ---
-    st.subheader("8: K1 Constant")
+    st.subheader("9: K1 Constant")
     if config.formula_mode:
         st.latex(r"K_1 = \frac{F_{\text{TR}}}{m} - gC_0")
     st.success(f"K1: **{config.k1:.5f}**")
@@ -100,7 +108,7 @@ def vehicle_dynamics():
         st.write(f" - Rolling Resistance Coefficient (C0): {config.C0}")
 
     # --- K2 Calculation ---
-    st.subheader("9: K2 Constant")
+    st.subheader("10: K2 Constant")
     if config.formula_mode:
         st.latex(r"K_2 = \frac{\rho C_D A_F}{2m} + gC_1")
     st.success(f"K2: **{config.k2:.5f}**")
@@ -113,7 +121,7 @@ def vehicle_dynamics():
         st.write(f" - Gravity (g): {GRAVITY} m/s²")
         st.write(f" - Speed-dependent Rolling Resistance Coefficient (C1): {config.C1}")
 
-    st.subheader("10: Velocity-Time Profile")
+    st.subheader("11: Velocity-Time Profile")
     velocity_profile(config.k1, config.k2)
 
     st.write("##### Terminal Velocity")

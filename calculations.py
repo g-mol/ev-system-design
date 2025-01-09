@@ -27,6 +27,14 @@ def calculate_power_required(traction_force, vehicle_speed):
     return traction_force * vehicle_speed
 
 
+def calculate_angular_velocity(vehicle_speed, wheel_radius):
+    return vehicle_speed / wheel_radius
+
+
+def calculate_torque_required(power_required, angular_velocity):
+    return power_required / angular_velocity
+
+
 def calculate_required_tractive_force_near_zero(mass, gradeability_percent):
     gradeability_rad = math.atan(gradeability_percent / 100)
     return (mass * GRAVITY * math.tan(gradeability_rad)) / math.sqrt(1 + math.tan(gradeability_rad) ** 2)
