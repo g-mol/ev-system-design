@@ -77,7 +77,7 @@ def vehicle_dynamics():
         st.write(f" - Traction Force (F_TR): {config.traction_force:.2f} N")
         st.write(f" - Vehicle Speed (v_xT): {config.top_speed_mps:.2f} m/s")
 
-    st.subheader("7. Required Torque")
+    st.subheader("7. Required Torque for the Wheels")
     if config.formula_mode:
         st.latex(r"\text{Torque} = \frac{\text{Power}}{\omega}")
     st.success(f"Required Torque: **{config.torque_required:.2f} Nm**")
