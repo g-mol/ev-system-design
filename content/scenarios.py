@@ -90,7 +90,7 @@ def scenarios():
             drag_force = calculate_aerodynamic_drag_force(relative_speed, config.frontal_area)
 
             road_load_force = calculate_road_load_force(rolling_force, gravitational_force, drag_force)
-            traction_force = calculate_traction_force(road_load_force, config.mass, scenario["acceleration"], km=1)
+            traction_force = calculate_traction_force(road_load_force, config.mass, scenario["acceleration"], config.km)
 
             # Power and torque
             power_required = calculate_power_required(traction_force, speed_mps)
