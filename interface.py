@@ -84,6 +84,8 @@ def load_profile(profile_name):
 def sidebar_calculations():
     current_config = load_current_config()
 
+    st.sidebar.title("Settings")
+
     # --- User Inputs ---
     config.debug_mode = st.sidebar.checkbox("Debug Mode", value=False)
     config.formula_mode = st.sidebar.checkbox("Show Formulas", value=True)
@@ -92,10 +94,6 @@ def sidebar_calculations():
 
     # Vehicle Inputs
     config.mass = st.sidebar.number_input("Vehicle Mass (kg)", min_value=500, max_value=5000, value=config.mass)
-    config.top_speed = st.sidebar.number_input("Top Speed (km/h)", min_value=0, max_value=400, value=config.top_speed)
-    config.time_to_100 = st.sidebar.number_input("Time to 100 km/h (s)", min_value=1.0, max_value=30.0,
-                                                 value=config.time_to_100,
-                                                 step=0.1)
     config.vehicle_height = st.sidebar.number_input("Vehicle Height (m)", min_value=1.0, max_value=3.0,
                                                     value=config.vehicle_height)
     config.vehicle_width = st.sidebar.number_input("Vehicle Width (m)", min_value=1.0, max_value=3.0,
@@ -104,6 +102,22 @@ def sidebar_calculations():
     config.wheel_radius = st.sidebar.number_input("Wheel Radius (m)", min_value=0.1, max_value=1.0,
                                                   value=config.wheel_radius,
                                                   step=0.01)
+
+    st.sidebar.header("Current Situation")
+    config.current_speed = st.sidebar.number_input("Current Speed (km/h)", min_value=0, max_value=400, value=100)
+    config.current_road_angle = st.sidebar.number_input("Current Road Angle (degrees)", min_value=0.0, max_value=45.0,
+                                                        value=5.0)
+    config.current_acceleration = st.sidebar.number_input("Current Acceleration (m/s²)", min_value=0.0, max_value=20.0,
+                                                          value=1.5)
+    config.headwind_speed = st.sidebar.number_input("Headwind Speed (km/h)", min_value=0, max_value=100, value=20)
+
+    st.sidebar.header("Vehicle Requirements")
+    config.top_speed = st.sidebar.number_input("Top Speed (km/h)", min_value=0, max_value=400, value=config.top_speed)
+    config.time_to_100 = st.sidebar.number_input("Time to 100 km/h (s)", min_value=1.0, max_value=30.0,
+                                                 value=config.time_to_100,
+                                                 step=0.1)
+    config.gradeability_percent = st.sidebar.number_input("Gradeability (%)", min_value=0.0, max_value=100.0,
+                                                          value=25.0)
 
     save_current_config(current_config)
 
@@ -137,16 +151,6 @@ def sidebar_calculations():
             st.success(f"Profile '{profile_name.strip()}' saved!")
         else:
             st.error("Please enter a valid profile name to save!")
-
-    st.sidebar.header("Environmental Parameters")
-    config.current_speed = st.sidebar.number_input("Current Speed (km/h)", min_value=0, max_value=400, value=100)
-    config.current_road_angle = st.sidebar.number_input("Current Road Angle (degrees)", min_value=0.0, max_value=45.0,
-                                                        value=5.0)
-    config.current_acceleration = st.sidebar.number_input("Current Acceleration (m/s²)", min_value=0.0, max_value=20.0,
-                                                            value=1.5)
-    config.headwind_speed = st.sidebar.number_input("Headwind Speed (km/h)", min_value=0, max_value=100, value=20)
-    config.gradeability_percent = st.sidebar.number_input("Gradeability (%)", min_value=0.0, max_value=100.0,
-                                                          value=25.0)
 
     st.sidebar.header("Vehicle Coefficients")
     config.km = st.sidebar.number_input("Rotational Inertia Coefficient (k_m)", min_value=1.0, max_value=1.2, value=1.1,

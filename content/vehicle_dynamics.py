@@ -11,8 +11,11 @@ from content.velocity_profile import (
 
 def vehicle_dynamics():
     st.title("Vehicle Dynamics")
-    st.markdown("---")
 
+    st.write(
+        "The calculations below are based on the current vehicle configuration and selected situation in the sidebar.")
+
+    st.markdown("---")
     # --- Results Display ---
     st.header("Calculation Results")
     st.subheader("1. Rolling Resistance Force")
