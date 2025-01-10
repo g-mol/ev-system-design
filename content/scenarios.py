@@ -102,6 +102,11 @@ def scenarios():
             else:
                 torque_required = calculate_torque_required(power_required, angular_velocity)
 
+            if "highest_power" not in st.session_state:
+                st.session_state["highest_power"] = 0
+            if "highest_torque" not in st.session_state:
+                st.session_state["highest_torque"] = 0
+
             if power_required > st.session_state["highest_power"]:
                 st.session_state["highest_power"] = power_required
             if torque_required > st.session_state["highest_torque"]:
