@@ -36,7 +36,6 @@ def vehicle_dynamics():
         st.write(f" - Vehicle Mass (m): {config.mass} kg")
         st.write(f" - Gravity (g): {GRAVITY} m/s²")
         st.write(f" - Angle (radians): {config.road_angle_rad:.4f}")
-        st.write(f" - Angle Sine: {math.sin(config.road_angle_rad):.4f}")
 
     st.subheader("3. Aerodynamic Drag Force (Including Headwind)")
     if config.formula_mode:
@@ -67,7 +66,6 @@ def vehicle_dynamics():
         st.write(f" - Road Load Force (F_RL): {config.road_load_force:.2f} N")
         st.write(f" - Rotational Inertia Coefficient (k_m): {config.km}")
         st.write(f" - Vehicle Mass (m): {config.mass} kg")
-        st.write(f" - Time to 100 km/h: {config.time_to_100:.2f} s")
         st.write(f" - Calculated Acceleration (a): {config.current_acceleration:.2f} m/s²")
 
     st.subheader("6. Required Propulsion Power")
