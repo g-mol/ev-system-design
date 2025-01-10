@@ -17,7 +17,14 @@ def scenarios():
     st.title("Vehicle Scenarios")
 
     st.write("The calculations below are based on the current vehicle configuration, selected requirements, "
-             "or a predefined scenario.")
+             "or a predefined scenario. The highest calculated power and torque values found in the scenarios "
+             "are displayed below.")
+
+    st.markdown("---")
+
+    st.subheader("Highest Calculated Power and Torque")
+    st.success(f"**Power:** {st.session_state['highest_power'] / 1000:.0f} kW")
+    st.success(f"**Torque:** {st.session_state['highest_torque']:.0f} Nm")
 
     st.markdown("---")
 
@@ -100,6 +107,17 @@ def scenarios():
                 torque_required = 0
             else:
                 torque_required = calculate_torque_required(power_required, angular_velocity)
+
+            # Save highest power and torque values in session state
+            if "highest_power" not in st.session_state:
+                st.session_state["highest_power"] = 0
+            if "highest_torque" not in st.session_state:
+                st.session_state["highest_torque"] = 0
+
+            if power_required > st.session_state["highest_power"]:
+                st.session_state["highest_power"] = power_required
+            if torque_required > st.session_state["highest_torque"]:
+                st.session_state["highest_torque"] = torque_required
 
             with col2:
                 with st.container():
