@@ -104,18 +104,18 @@ def sidebar_calculations():
                                                   step=0.01)
 
     st.sidebar.header("Current Situation")
-    config.current_speed = st.sidebar.number_input("Current Speed (km/h)", min_value=0, max_value=400, value=100)
-    config.current_road_angle = st.sidebar.number_input("Current Road Angle (degrees)", min_value=0.0, max_value=45.0,
+    config.current_speed = st.sidebar.number_input("Speed (km/h)", min_value=0, max_value=400, value=100)
+    config.current_road_angle = st.sidebar.number_input("Incline (%)", min_value=0.0, max_value=45.0,
                                                         value=5.0)
-    config.current_acceleration = st.sidebar.number_input("Current Acceleration (m/s²)", min_value=0.0, max_value=20.0,
+    config.current_acceleration = st.sidebar.number_input("Acceleration (m/s²)", min_value=0.0, max_value=20.0,
                                                           value=1.5)
-    config.headwind_speed = st.sidebar.number_input("Headwind Speed (km/h)", min_value=0, max_value=100, value=20)
+    config.headwind_speed = st.sidebar.number_input("Headwind (km/h)", min_value=0, max_value=100, value=20)
 
     st.sidebar.header("Vehicle Requirements")
     config.top_speed = st.sidebar.number_input("Top Speed (km/h)", min_value=0, max_value=400, value=config.top_speed)
     config.time_to_100 = st.sidebar.number_input("Time to 100 km/h (s)", min_value=1.0, max_value=30.0,
                                                  value=config.time_to_100,
-                                                 step=0.1)
+                                                 step=1.0)
     config.gradeability_percent = st.sidebar.number_input("Gradeability (%)", min_value=0.0, max_value=100.0,
                                                           value=25.0)
 

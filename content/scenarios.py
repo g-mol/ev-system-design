@@ -15,57 +15,35 @@ from calculations import (
 
 def scenarios():
     st.title("Vehicle Scenarios")
-    st.markdown("---")
 
-    # Interactive Scenario
-    st.markdown("### **Custom Scenario**")
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        custom_speed_kph = st.number_input("Speed (km/h):", min_value=0, max_value=300, value=50, step=1)
-    with col2:
-        custom_grade_percent = st.number_input("Incline (%):", min_value=-30, max_value=100, value=0, step=1)
-    with col3:
-        custom_acceleration = st.number_input("Acceleration (m/s²):", min_value=0.0, max_value=20.0, value=1.0, step=0.1)
-    with col4:
-        custom_headwind_kph = st.number_input("Headwind (km/h):", min_value=0, max_value=100, value=25, step=1)
-
-    speed_mps = custom_speed_kph / 3.6
-    headwind_mps = custom_headwind_kph / 3.6
-    relative_speed = speed_mps + headwind_mps
-    angle_rad = math.atan(custom_grade_percent / 100)
-
-    rolling_force = calculate_rolling_resistance_force(config.mass, angle_rad, speed_mps, config.C0, config.C1)
-    gravitational_force = calculate_gravitational_force(config.mass, angle_rad)
-    drag_force = calculate_aerodynamic_drag_force(relative_speed, config.frontal_area)
-
-    road_load_force = calculate_road_load_force(rolling_force, gravitational_force, drag_force)
-    traction_force = calculate_traction_force(road_load_force, config.mass, custom_acceleration, config.km)
-
-    power_required = calculate_power_required(traction_force, speed_mps)
-    angular_velocity = calculate_angular_velocity(speed_mps, config.wheel_radius)
-
-    if angular_velocity == 0:
-        torque_required = 0
-    else:
-        torque_required = calculate_torque_required(power_required, angular_velocity)
-
-    st.success(f"**Required Propulsion Power:** {power_required/1000:.0f} kW")
-    st.success(f"**Required Torque:** {torque_required:.0f} Nm")
-
-    if config.debug_mode:
-        st.markdown("---")
-        st.write(f"**Rolling Resistance Force:** {rolling_force:.2f} N")
-        st.write(f"**Gravitational Force:** {gravitational_force:.2f} N")
-        st.write(f"**Aerodynamic Drag Force:** {drag_force:.2f} N")
-        st.write(f"**Road Load Force:** {road_load_force:.2f} N")
-        st.write(f"**Traction Force:** {traction_force:.2f} N")
-        st.markdown("---")
+    st.write("The calculations below are based on the current vehicle configuration, selected requirements, "
+             "or a predefined scenario.")
 
     st.markdown("---")
 
     # Predefined Scenarios
     scenarios = [
+        {
+            "name": "Current Situation",
+            "speed_kph": config.current_speed,
+            "grade_percent": config.current_road_angle,
+            "acceleration": config.current_acceleration,
+            "headwind_kph": config.headwind_speed,
+        },
+        {
+            "name": "Static Top Speed Requirement",
+            "speed_kph": config.top_speed,
+            "grade_percent": 0,
+            "acceleration": 0,
+            "headwind_kph": config.headwind_speed,
+        },
+        {
+            "name": f"Time to 100 km/h in {round(config.time_to_100, 2)} seconds",
+            "speed_kph": 100,
+            "grade_percent": 0,
+            "acceleration": round(config.time_to_100_acceleration, 2),
+            "headwind_kph": config.headwind_speed,
+        },
         {
             "name": "Flat Roads",
             "speed_kph": 100,
