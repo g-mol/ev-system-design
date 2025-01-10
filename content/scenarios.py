@@ -22,18 +22,6 @@ def scenarios():
 
     st.markdown("---")
 
-    # Save highest power and torque values in session state
-    if "highest_power" not in st.session_state:
-        st.session_state["highest_power"] = 0
-    if "highest_torque" not in st.session_state:
-        st.session_state["highest_torque"] = 0
-
-    st.subheader("Highest Calculated Power and Torque")
-    st.success(f"**Power:** {st.session_state['highest_power'] / 1000:.0f} kW")
-    st.success(f"**Torque:** {st.session_state['highest_torque']:.0f} Nm")
-
-    st.markdown("---")
-
     # Predefined Scenarios
     scenarios = [
         {
@@ -125,3 +113,7 @@ def scenarios():
                     st.success(f"**Required Torque:** {torque_required:.0f} Nm")
 
             st.markdown("---")
+
+    st.subheader("Highest Calculated Power and Torque")
+    st.error(f"**Power:** {st.session_state['highest_power'] / 1000:.0f} kW")
+    st.error(f"**Torque:** {st.session_state['highest_torque']:.0f} Nm")
