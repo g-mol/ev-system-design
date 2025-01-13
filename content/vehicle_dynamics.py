@@ -17,7 +17,6 @@ def vehicle_dynamics():
 
     st.markdown("---")
     # --- Results Display ---
-    st.header("Calculation Results")
     st.subheader("1. Rolling Resistance Force")
     if config.formula_mode:
         st.latex(

@@ -4,7 +4,6 @@ import streamlit as st
 import plotly.graph_objs as go
 import config
 
-
 DRIVE_PROFILES_DIR = "drive_profiles"
 
 
@@ -25,23 +24,28 @@ def drive_profile():
     """Main function to handle drive profile selection and analysis."""
 
     st.title("Drive Profile")
+
+    st.write(
+        "A drive profile is a set of data that describes the speed and acceleration of a vehicle over time. It is "
+        "used to simulate the vehicle's performance and energy consumption under normal driving conditions. These "
+        "values are ultimately used to size the vehicle's battery.")
+
     st.markdown("---")
 
     # --- Drive Profile Selection ---
-    # st.header("Drive Profile Selection")
-
     # List available drive profiles
     profiles = [f for f in os.listdir(DRIVE_PROFILES_DIR) if f.endswith('.csv')]
 
+    # Set default to 'wltc_drive_profile_low.csv' if available
+    default_profile = 'wltc_drive_profile_low.csv' if 'wltc_drive_profile_low.csv' in profiles else None
+
     # Dropdown to select a drive profile
-    selected_profile = st.selectbox("Select Drive Profile", profiles)
+    selected_profile = st.selectbox("Select Drive Profile", profiles,
+                                    index=profiles.index(default_profile) if default_profile else 0)
 
     # Load the selected drive profile
     file_path = os.path.join(DRIVE_PROFILES_DIR, selected_profile)
     df = load_drive_profile(file_path)
-
-    # Show selected profile details
-    # st.write(f"**Selected Drive Profile:** {selected_profile}")
 
     # Plot and analyze the drive profile
     speed_and_acceleration_profile(df)
@@ -142,6 +146,7 @@ def distance_profile(df):
 
     st.plotly_chart(distanceFig)
 
+
 def tractive_power_profile(df):
     # Convert speed to m/s
     df['Speed (m/s)'] = df['Speed'] * 1000 / 3600
@@ -204,7 +209,7 @@ def tractive_power_profile(df):
             titlefont=dict(color="blue"),
             tickfont=dict(color="blue"),
             overlaying="y",  # Overlay on the primary y-axis
-            side="right",    # Position on the right side
+            side="right",  # Position on the right side
         ),
         template="plotly_white",
         legend=dict(x=0, y=1, traceorder="normal"),
@@ -220,7 +225,8 @@ def required_energy_profile(df):
     st.header("Energy-Time Profile")
 
     # Add input for regenerative braking efficiency
-    regen_efficiency = st.number_input("Regenerative Braking Efficiency (%):", min_value=0, max_value=100, value=70, step=1) / 100.0
+    regen_efficiency = st.number_input("Regenerative Braking Efficiency (%):", min_value=0, max_value=100, value=70,
+                                       step=1) / 100.0
 
     # Calculate dynamic tractive force F_TR(t)
     df['Aerodynamic Drag (N)'] = 0.5 * config.AIR_DENSITY * config.C_DRAG * config.frontal_area * df['Speed (m/s)'] ** 2
@@ -252,6 +258,9 @@ def required_energy_profile(df):
     total_distance_km = df['Total Distance (km)'].iloc[-1]
     kwh_per_km = total_energy_kwh / total_distance_km if total_distance_km > 0 else float('inf')  # Energy per km
 
+    # Save wh per km to session state
+    st.session_state["wh_per_km"] = kwh_per_km * 1000
+
     # --- Plotly Graph ---
     energy_fig = go.Figure()
 
@@ -280,5 +289,7 @@ def required_energy_profile(df):
     st.write(f"**Total Energy Used:** {total_energy_kwh:.2f} kWh")
     st.write(f"**Total Distance Traveled:** {total_distance_km:.2f} km")
     st.write(f"**Average Energy Efficiency:** {1 / kwh_per_km:.2f} km/kWh" if kwh_per_km > 0 else "N/A")
-    st.write(f"**Energy Consumption per Kilometer:** {kwh_per_km * 1000:.0f} Wh/km")
-    st.write(f"**Energy Consumption per 100 Kilometer:** {kwh_per_km * 100:.2f} kWh/100 km")
+    # st.write(f"**Energy Consumption per Kilometer:** {kwh_per_km * 1000:.0f} Wh/km")
+
+    st.success(f"**Energy Consumption per Kilometer:** {kwh_per_km * 1000:.0f} Wh/km")
+    # st.write(f"**Energy Consumption per 100 Kilometer:** {kwh_per_km * 100:.2f} kWh/100 km")
