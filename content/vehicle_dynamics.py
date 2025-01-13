@@ -13,7 +13,9 @@ def vehicle_dynamics():
     st.title("Vehicle Dynamics")
 
     st.write(
-        "The calculations below are based on the current vehicle configuration and selected situation in the sidebar.")
+        "The calculations below are based on the current vehicle configuration and selected situation in the sidebar. "
+        "These calculations are not used for designing the vehicle but for experimenting with different scenarios and "
+        "understanding the calculations.")
 
     st.markdown("---")
     # --- Results Display ---
