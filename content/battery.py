@@ -20,7 +20,7 @@ def battery():
 
     # Step 2: Input total distance
     st.subheader("2: Total Distance")
-    total_distance_km = st.number_input("Enter the total distance (km):", min_value=10, max_value=1000, value=300,
+    total_distance_km = st.number_input("Enter the total distance (km):", min_value=10, max_value=1000, value=150,
                                         step=10)
     total_energy_required_kwh = total_distance_km * energy_consumption_per_km
     st.write(f"**Total Energy Required:** {total_energy_required_kwh:.2f} kWh")
