@@ -46,7 +46,7 @@ def drive_profile():
     # Plot and analyze the drive profile
     speed_and_acceleration_profile(df)
     distance_profile(df)
-    tractive_power_profile(df)
+    # tractive_power_profile(df)
     required_energy_profile(df)
 
 
@@ -216,8 +216,12 @@ def tractive_power_profile(df):
     st.plotly_chart(powerFig, use_container_width=True)
 
 
-
 def required_energy_profile(df):
+    st.header("Energy-Time Profile")
+
+    # Add input for regenerative braking efficiency
+    regen_efficiency = st.number_input("Regenerative Braking Efficiency (%):", min_value=0, max_value=100, value=70, step=1) / 100.0
+
     # Calculate dynamic tractive force F_TR(t)
     df['Aerodynamic Drag (N)'] = 0.5 * config.AIR_DENSITY * config.C_DRAG * config.frontal_area * df['Speed (m/s)'] ** 2
     df['Rolling Resistance (N)'] = config.mass * config.GRAVITY * (config.C0 + config.C1 * df['Speed (m/s)'] ** 2)
@@ -226,6 +230,9 @@ def required_energy_profile(df):
 
     # Calculate instantaneous power P_TR(t) = F_TR * v(t)
     df['Tractive Power (W)'] = df['Tractive Force (N)'] * df['Speed (m/s)']
+
+    # Adjust for regenerative braking efficiency
+    df['Tractive Power (W)'] = df['Tractive Power (W)'].apply(lambda x: x * regen_efficiency if x < 0 else x)
 
     # Integrate power over time to calculate energy
     df['Time Interval (s)'] = df['Time'].diff().fillna(0)  # Time intervals
@@ -266,7 +273,6 @@ def required_energy_profile(df):
     )
 
     # Display in Streamlit
-    st.header("Energy-Time Profile")
     st.plotly_chart(energy_fig, use_container_width=True)
 
     # --- Display Statistics ---
