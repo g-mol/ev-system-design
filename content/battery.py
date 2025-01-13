@@ -10,6 +10,9 @@ def battery():
              "is determined based on the motor voltage and cell specifications.")
     st.markdown("---")
 
+    if "wh_per_km" not in st.session_state:
+        st.session_state["wh_per_km"] = 1
+
     # Step 1: Display energy consumption per kilometer
     st.subheader("1: Energy Consumption")
     energy_consumption_per_km = st.session_state["wh_per_km"] / 1000  # Convert Wh/km to kWh/km
