@@ -35,3 +35,10 @@ def drive_train():
     # Display result
     st.markdown("### Result")
     st.success(f"**Required Gear Ratio:** {gear_ratio:.1f}")
+
+    st.write(f"**Theoretical Motor Torque:** "
+             f"{st.session_state['highest_torque'] / gear_ratio:.0f} Nm")
+    drivetrain_efficiency = st.number_input("Drivetrain Efficiency (%):", min_value=0, max_value=100, value=90,
+                                            step=1) / 100
+    st.success(f"**Required Motor Torque:** "
+               f"{st.session_state['highest_torque'] / gear_ratio / drivetrain_efficiency:.0f} Nm")

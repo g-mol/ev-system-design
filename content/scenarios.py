@@ -14,6 +14,9 @@ from calculations import (
 
 
 def scenarios():
+    st.session_state["highest_power"] = 0
+    st.session_state["highest_torque"] = 0
+
     st.title("Vehicle Scenarios")
 
     st.write("The calculations below are based on the current vehicle configuration, selected requirements, "
@@ -102,10 +105,10 @@ def scenarios():
             else:
                 torque_required = calculate_torque_required(power_required, angular_velocity)
 
-            if "highest_power" not in st.session_state:
-                st.session_state["highest_power"] = 0
-            if "highest_torque" not in st.session_state:
-                st.session_state["highest_torque"] = 0
+            # if "highest_power" not in st.session_state:
+            #     st.session_state["highest_power"] = 0
+            # if "highest_torque" not in st.session_state:
+            #     st.session_state["highest_torque"] = 0
 
             if power_required > st.session_state["highest_power"]:
                 st.session_state["highest_power"] = power_required
