@@ -1,1 +1,9 @@
-{"mass": 3500, "top_speed": 180, "time_to_100": 4.7, "vehicle_height": 1.986, "vehicle_width": 1.931, "wheel_radius": 0.3915}
+{
+  "mass": 3500,
+  "vehicle_height": 1.986,
+  "vehicle_width": 1.931,
+  "wheel_radius": 0.3915,
+  "top_speed": 180,
+  "time_to_100": 4.7,
+  "gradeability_percent": 30
+}

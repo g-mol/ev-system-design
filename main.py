@@ -10,20 +10,20 @@ from interface import sidebar_calculations
 st.title("Electric Vehicle System Design Tool")
 
 sidebar_calculations()
+# "Vehicle Dynamics",
+tabs = st.tabs(["Scenarios", "Drive Train", "Drive Profile", "Battery"])
 
-tabs = st.tabs(["Vehicle Dynamics", "Scenarios", "Drive Train", "Drive Profile", "Battery"])
+# with tabs[0]:
+    # vehicle_dynamics()
 
 with tabs[0]:
-    vehicle_dynamics()
-
-with tabs[1]:
     scenarios()
 
-with tabs[2]:
+with tabs[1]:
     drive_train()
 
-with tabs[3]:
+with tabs[2]:
     drive_profile()
 
-with tabs[4]:
+with tabs[3]:
     battery()

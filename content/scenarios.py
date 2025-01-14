@@ -17,7 +17,7 @@ def scenarios():
     st.session_state["highest_power"] = 0
     st.session_state["highest_torque"] = 0
 
-    st.title("Vehicle Scenarios")
+    st.title("Scenarios")
 
     st.write("The calculations below are based on the current vehicle configuration, selected requirements, "
              "or a predefined scenario. The highest calculated power and torque values found in the scenarios "
@@ -37,6 +37,8 @@ def scenarios():
         current_acceleration = st.number_input("Acceleration (m/s²)", min_value=0.0, max_value=20.0, value=1.5)
     with input4:
         headwind_speed = st.number_input("Headwind (km/h)", min_value=0, max_value=100, value=20)
+
+    st.write("##")
 
     # Predefined Scenarios
     scenarios = [

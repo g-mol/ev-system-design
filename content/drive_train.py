@@ -4,7 +4,7 @@ import config
 
 
 def drive_train():
-    st.title("Drive Train Gear Ratio")
+    st.title("Drive Train")
 
     st.write(
         "The calculation below helps determine the required gear ratio for the electric vehicle based on the required "

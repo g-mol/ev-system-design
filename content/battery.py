@@ -4,7 +4,7 @@ import config
 
 
 def battery():
-    st.title("Battery Sizing")
+    st.title("Battery")
     st.write("The total battery capacity required for the electric vehicle is calculated based on the energy "
              "consumption in the drive profile and the required range. After that the battery pack configuration "
              "is determined based on the motor voltage and cell specifications.")

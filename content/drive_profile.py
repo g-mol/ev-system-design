@@ -225,7 +225,7 @@ def required_energy_profile(df):
     st.header("Energy-Time Profile")
 
     # Add input for regenerative braking efficiency
-    regen_efficiency = st.number_input("Regenerative Braking Efficiency (%):", min_value=0, max_value=100, value=70,
+    regen_efficiency = st.number_input("Regenerative Braking Efficiency (%):", min_value=0, max_value=100, value=65,
                                        step=1) / 100.0
 
     # Calculate dynamic tractive force F_TR(t)
