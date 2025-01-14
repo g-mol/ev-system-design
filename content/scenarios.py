@@ -25,49 +25,62 @@ def scenarios():
 
     st.markdown("---")
 
+    # Inputs
+    st.markdown(f"### **Inputs**")
+    input1, input2, input3, input4 = st.columns(4)
+
+    with input1:
+        current_speed = st.number_input("Speed (km/h)", min_value=0, max_value=400, value=100)
+    with input2:
+        current_road_angle = st.number_input("Incline (%)", min_value=0.0, max_value=45.0, value=5.0, step=1.0)
+    with input3:
+        current_acceleration = st.number_input("Acceleration (m/s²)", min_value=0.0, max_value=20.0, value=1.5)
+    with input4:
+        headwind_speed = st.number_input("Headwind (km/h)", min_value=0, max_value=100, value=20)
+
     # Predefined Scenarios
     scenarios = [
         {
             "name": "Current Situation",
-            "speed_kph": config.current_speed,
-            "grade_percent": config.current_road_angle,
-            "acceleration": config.current_acceleration,
-            "headwind_kph": config.headwind_speed,
+            "speed_kph": current_speed,
+            "grade_percent": current_road_angle,
+            "acceleration": current_acceleration,
+            "headwind_kph": headwind_speed,
         },
         {
             "name": "Static Top Speed Requirement",
             "speed_kph": config.top_speed,
             "grade_percent": 0,
             "acceleration": 0,
-            "headwind_kph": config.headwind_speed,
+            "headwind_kph": headwind_speed,
         },
         {
             "name": f"Time to 100 km/h in {round(config.time_to_100, 2)} seconds",
             "speed_kph": 100,
             "grade_percent": 0,
             "acceleration": round(config.time_to_100_acceleration, 2),
-            "headwind_kph": config.headwind_speed,
+            "headwind_kph": headwind_speed,
         },
         {
             "name": "Flat Roads",
             "speed_kph": 100,
             "grade_percent": 0,
             "acceleration": 0,
-            "headwind_kph": 25,
+            "headwind_kph": headwind_speed,
         },
         {
             "name": "Inclines",
             "speed_kph": 5,
             "grade_percent": 20,
             "acceleration": 0,
-            "headwind_kph": 25,
+            "headwind_kph": headwind_speed,
         },
         {
             "name": "Acceleration",
             "speed_kph": 50,
             "grade_percent": 0,
             "acceleration": 1.5,
-            "headwind_kph": 25,
+            "headwind_kph": headwind_speed,
         },
     ]
 
