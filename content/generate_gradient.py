@@ -21,7 +21,7 @@ def generate_gradient():
     st.subheader("Input Settings")
     total_time_seconds = st.number_input("Total Time (s):", min_value=100, max_value=10000, value=2067, step=10)
     step_seconds = st.number_input("Time Step (s):", min_value=1, max_value=60, value=1, step=1)
-    hill_amplitude = st.number_input("Hill Amplitude (%):", min_value=1.0, max_value=20.0, value=5.0, step=0.1)
+    hill_amplitude = st.number_input("Hill Amplitude (%):", min_value=0.0, max_value=20.0, value=5.0, step=0.1)
     hill_frequency = st.number_input("Hill Frequency (s):", min_value=100, max_value=2000, value=600, step=10)
     noise_level = st.number_input("Noise Level (%):", min_value=0.0, max_value=5.0, value=0.5, step=0.1)
 

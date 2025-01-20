@@ -10,13 +10,14 @@ DRIVE_PROFILES_DIR = "drive_profiles"
 def load_drive_profile(file_path):
     """Load a drive profile CSV file."""
     df = pd.read_csv(
-        file_path, sep=';', usecols=[1, 3, 4],
-        names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
+        file_path, sep=';', usecols=[1, 3, 4, 6],
+        names=['Time', 'Speed', 'Acceleration', 'Gradient'], skiprows=1, decimal=','
     )
 
     df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')
     df['Acceleration'] = pd.to_numeric(df['Acceleration'], errors='coerce')
     df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
+    df['Gradient'] = pd.to_numeric(df['Gradient'], errors='coerce')
     return df
 
 
@@ -58,6 +59,7 @@ def speed_and_acceleration_profile(df):
     # Create the interactive plot
     speedFig = go.Figure()
     accFig = go.Figure()
+    gradientFig = go.Figure()
 
     # Add Speed trace
     speedFig.add_trace(go.Scatter(
@@ -71,6 +73,13 @@ def speed_and_acceleration_profile(df):
         x=df['Time'], y=df['Acceleration'],
         mode='lines', name='Acceleration (m/s²)',
         line=dict(color='orange')
+    ))
+
+    # Add Gradient trace
+    gradientFig.add_trace(go.Scatter(
+        x=df['Time'], y=df['Gradient'],
+        mode='lines', name='Gradient (%)',
+        line=dict(color='purple')
     ))
 
     # Update layout
@@ -93,6 +102,16 @@ def speed_and_acceleration_profile(df):
         hovermode="x unified",
     )
 
+    # Update layout
+    gradientFig.update_layout(
+        title="Drive Profile Gradient",
+        xaxis_title="Time (s)",
+        yaxis_title="Values",
+        legend=dict(x=0, y=1, traceorder="normal"),
+        template="plotly_white",
+        hovermode="x unified",
+    )
+
     total_time = df['Time'].max()
     max_velocity = df['Speed'].max()
     average_velocity = df['Speed'].mean()
@@ -104,6 +123,7 @@ def speed_and_acceleration_profile(df):
 
     st.plotly_chart(speedFig)
     st.plotly_chart(accFig)
+    # st.plotly_chart(gradientFig)
 
 
 def distance_profile(df):
