@@ -95,8 +95,8 @@ def logistics():
     restaurant_crates_per_day_in_area = population * restaurant_crates_per_person_per_day
 
     st.success(f"**Total restaurant crates per day in area:** {restaurant_crates_per_day_in_area:.0f} crates")
-
-    amount_of_crates_per_van_per_day = amount_of_crates * amount_of_shifts
+    actual_amount_of_crates = amount_of_crates_lengthwise * amount_of_crates_vertically * 2
+    amount_of_crates_per_van_per_day = actual_amount_of_crates * amount_of_shifts
     st.write(f"**Amount of crates that a van can deliver per day:** {amount_of_crates_per_van_per_day}")
 
     minimum_vans_needed_restaurant = math.ceil(restaurant_crates_per_day_in_area / amount_of_crates_per_van_per_day)
