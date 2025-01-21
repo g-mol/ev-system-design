@@ -17,7 +17,7 @@ def drive_train():
     wheel_radius = config.wheel_radius  # Assume wheel_radius is in meters
 
     # New input for motor max RPM
-    motor_max_rpm = st.number_input("Motor Max RPM:", min_value=1000, max_value=20000, value=10000, step=100)
+    motor_max_rpm = st.number_input("Motor Max RPM:", min_value=1000, max_value=20000, value=7000, step=100)
 
     st.markdown(f"- **Top Speed:** {config.top_speed} km/h -> {top_speed_mps:.2f} m/s")
     st.markdown(f"- **Wheel Radius:** {wheel_radius:.2f} m")

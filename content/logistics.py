@@ -4,11 +4,12 @@ import config
 
 
 def logistics():
-    st.title("Scenarios")
+    st.title("Logistics")
 
-    st.write("The calculations below are based on the current vehicle configuration, selected requirements, "
-             "or a predefined scenario. The highest calculated power and torque values found in the scenarios "
-             "are displayed below.")
+    # Description
+    st.write("The calculations below are based on the current area population size, the amount of packages delivered "
+             "per person per day, and the amount of restaurant crates delivered per person per day. The calculations "
+             "are used to determine the amount of vans needed to deliver the packages and crates in the area.")
 
     st.markdown("---")
 
@@ -84,7 +85,7 @@ def logistics():
     st.success(f"**Needed internal van length:** {van_length:.2f} m")
 
     st.markdown("---")
-    st.markdown(f"### **Restaurant**")
+    st.markdown(f"### **Restaurants**")
 
     restaurant_crates_per_person_per_day = st.number_input(
         "Restaurant crates delivered per person per day (based on data in the Netherlands)", min_value=0.0,
@@ -94,33 +95,11 @@ def logistics():
 
     st.success(f"**Total restaurant crates per day in area:** {restaurant_crates_per_day_in_area:.0f} crates")
 
-    # shelf_depth_left = st.number_input("Left shelf depth (m)", min_value=0.0, value=0.6)
-    # shelf_depth_right = st.number_input("Right shelf depth (m)", min_value=0.0, value=0.2)
-    # walkway_width = st.number_input("Walkway width (m)", min_value=0.0, value=0.7)
-    # van_height = st.number_input("Van height (m)", min_value=0.0, value=1.5)
-    #
-    # needed_van_length = total_package_volume / (van_height * (shelf_depth_left + shelf_depth_right))
-    #
-    # st.success(f"**Needed van length:** {needed_van_length:.2f} m")
-    #
-    # st.markdown("---")
-    # st.markdown(f"### **Amount of crates on left shelf**")
-    # st.write("The amount of crates on the left shelf is calculated based on the size of a standard crate of 0.6 x 0.4 "
-    #          "x 0.24 m³.")
-    #
-    # crate_depth = 0.6
-    # crate_width = 0.4
-    # crate_height = 0.24
-    #
-    # shelf_thickness = st.number_input("Shelf thickness + air gap (cm)", min_value=0.0, value=8.0)
-    #
-    # crate_volume = crate_depth * crate_width * (crate_height + shelf_thickness / 100)
-    #
-    # number_of_crates_height = math.floor(van_height / (crate_height + shelf_thickness / 100))
-    # number_of_crates_width = math.floor(needed_van_length / crate_depth)
-    #
-    # st.write(f"**Amount of crates stacked vertically:** {number_of_crates_height}")
-    # st.write(f"**Amount of crates next to each other:** {number_of_crates_width}")
-    #
-    # st.markdown("")
-    # st.success(f"**Total amount of crates:** {number_of_crates_height * number_of_crates_width}")
+    minimum_vans_needed_restaurant = math.ceil(restaurant_crates_per_day_in_area / amount_of_crates)
+
+    st.success(f"**Minimum needed vans for restaurant crates in area:** {minimum_vans_needed_restaurant} vans")
+
+    st.markdown("---")
+    st.markdown(f"### **Total needed vans**")
+    total_vans_needed = minimum_vans_needed + minimum_vans_needed_restaurant
+    st.error(f"**Total needed vans in area:** {total_vans_needed} vans")

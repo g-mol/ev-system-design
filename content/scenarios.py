@@ -34,9 +34,9 @@ def scenarios():
     with input2:
         current_road_angle = st.number_input("Incline (%)", min_value=0.0, max_value=45.0, value=5.0, step=1.0)
     with input3:
-        current_acceleration = st.number_input("Acceleration (m/s²)", min_value=0.0, max_value=20.0, value=1.5)
+        current_acceleration = st.number_input("Acceleration (m/s²)", min_value=0.0, max_value=20.0, value=1.0)
     with input4:
-        headwind_speed = st.number_input("Headwind (km/h)", min_value=0, max_value=100, value=20)
+        headwind_speed = st.number_input("Headwind (km/h)", min_value=0, max_value=100, value=0)
 
     st.write("##")
 
