@@ -106,7 +106,8 @@ def scenarios():
 
             rolling_force = calculate_rolling_resistance_force(config.mass, angle_rad, speed_mps, config.C0, config.C1)
             gravitational_force = calculate_gravitational_force(config.mass, angle_rad)
-            drag_force = calculate_aerodynamic_drag_force(relative_speed, config.frontal_area)
+            frontal_area = config.vehicle_height * config.vehicle_width
+            drag_force = calculate_aerodynamic_drag_force(relative_speed, frontal_area)
 
             road_load_force = calculate_road_load_force(rolling_force, gravitational_force, drag_force)
             traction_force = calculate_traction_force(road_load_force, config.mass, scenario["acceleration"], config.km)
