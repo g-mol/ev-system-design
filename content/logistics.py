@@ -35,7 +35,7 @@ def logistics():
     total_working_hours_per_day = shift_length * amount_of_shifts
 
     minimum_vans_needed = math.ceil(packages_per_day_in_area / (packaged_per_hour * total_working_hours_per_day))
-    st.success(f"**Minimum needed vans in area:** {minimum_vans_needed} vans")
+    st.success(f"**Minimum needed vans for normal packages in area:** {minimum_vans_needed} vans")
 
     theoretical_amount_of_vans = minimum_vans_needed * amount_of_shifts
 
@@ -82,6 +82,17 @@ def logistics():
     van_length = amount_of_crates_lengthwise * crate_depth
 
     st.success(f"**Needed internal van length:** {van_length:.2f} m")
+
+    st.markdown("---")
+    st.markdown(f"### **Restaurant**")
+
+    restaurant_crates_per_person_per_day = st.number_input(
+        "Restaurant crates delivered per person per day (based on data in the Netherlands)", min_value=0.0,
+        value=0.007774, format="%.8f")
+
+    restaurant_crates_per_day_in_area = population * restaurant_crates_per_person_per_day
+
+    st.success(f"**Total restaurant crates per day in area:** {restaurant_crates_per_day_in_area:.0f} crates")
 
     # shelf_depth_left = st.number_input("Left shelf depth (m)", min_value=0.0, value=0.6)
     # shelf_depth_right = st.number_input("Right shelf depth (m)", min_value=0.0, value=0.2)

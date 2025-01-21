@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objs as go
 import config
+import numpy as np
 
 DRIVE_PROFILES_DIR = "drive_profiles"
 
@@ -10,14 +11,15 @@ DRIVE_PROFILES_DIR = "drive_profiles"
 def load_drive_profile(file_path):
     """Load a drive profile CSV file."""
     df = pd.read_csv(
-        file_path, sep=';', usecols=[1, 3, 4, 6],
-        names=['Time', 'Speed', 'Acceleration', 'Gradient'], skiprows=1, decimal=','
+        file_path, sep=';', usecols=[1, 3, 4],
+        names=['Time', 'Speed', 'Acceleration'], skiprows=1, decimal=','
     )
 
     df['Speed'] = pd.to_numeric(df['Speed'], errors='coerce')
     df['Acceleration'] = pd.to_numeric(df['Acceleration'], errors='coerce')
     df['Time'] = pd.to_numeric(df['Time'], errors='coerce')
-    df['Gradient'] = pd.to_numeric(df['Gradient'], errors='coerce')
+    # df['Gradient'] = pd.to_numeric(df['Gradient'], errors='coerce')
+    # df['Height'] = pd.to_numeric(df['Height'], errors='coerce')
     return df
 
 
@@ -59,7 +61,8 @@ def speed_and_acceleration_profile(df):
     # Create the interactive plot
     speedFig = go.Figure()
     accFig = go.Figure()
-    gradientFig = go.Figure()
+    # gradientFig = go.Figure()
+    # heightFig = go.Figure()
 
     # Add Speed trace
     speedFig.add_trace(go.Scatter(
@@ -75,18 +78,25 @@ def speed_and_acceleration_profile(df):
         line=dict(color='orange')
     ))
 
-    # Add Gradient trace
-    gradientFig.add_trace(go.Scatter(
-        x=df['Time'], y=df['Gradient'],
-        mode='lines', name='Gradient (%)',
-        line=dict(color='purple')
-    ))
+    # # Add Gradient trace
+    # gradientFig.add_trace(go.Scatter(
+    #     x=df['Time'], y=df['Gradient'],
+    #     mode='lines', name='Gradient (%)',
+    #     line=dict(color='purple')
+    # ))
+    #
+    # # Add Height trace
+    # heightFig.add_trace(go.Scatter(
+    #     x=df['Time'], y=df['Height'],
+    #     mode='lines', name='Height (m)',
+    #     line=dict(color='green')
+    # ))
 
     # Update layout
     speedFig.update_layout(
         title="Drive Profile Speed",
         xaxis_title="Time (s)",
-        yaxis_title="Values",
+        yaxis_title="Speed (km/h)",
         legend=dict(x=0, y=1, traceorder="normal"),
         template="plotly_white",
         hovermode="x unified",
@@ -96,21 +106,31 @@ def speed_and_acceleration_profile(df):
     accFig.update_layout(
         title="Drive Profile Acceleration",
         xaxis_title="Time (s)",
-        yaxis_title="Values",
+        yaxis_title="Acceleration (m/s²)",
         legend=dict(x=0, y=1, traceorder="normal"),
         template="plotly_white",
         hovermode="x unified",
     )
 
-    # Update layout
-    gradientFig.update_layout(
-        title="Drive Profile Gradient",
-        xaxis_title="Time (s)",
-        yaxis_title="Values",
-        legend=dict(x=0, y=1, traceorder="normal"),
-        template="plotly_white",
-        hovermode="x unified",
-    )
+    # # Update layout
+    # gradientFig.update_layout(
+    #     title="Drive Profile Gradient",
+    #     xaxis_title="Time (s)",
+    #     yaxis_title="Gradient (%)",
+    #     legend=dict(x=0, y=1, traceorder="normal"),
+    #     template="plotly_white",
+    #     hovermode="x unified",
+    # )
+    # #
+    # # # Update layout
+    # heightFig.update_layout(
+    #     title="Drive Profile Height",
+    #     xaxis_title="Time (s)",
+    #     yaxis_title="Height (m)",
+    #     legend=dict(x=0, y=1, traceorder="normal"),
+    #     template="plotly_white",
+    #     hovermode="x unified",
+    # )
 
     total_time = df['Time'].max()
     max_velocity = df['Speed'].max()
@@ -124,6 +144,7 @@ def speed_and_acceleration_profile(df):
     st.plotly_chart(speedFig)
     st.plotly_chart(accFig)
     # st.plotly_chart(gradientFig)
+    # st.plotly_chart(heightFig)
 
 
 def distance_profile(df):
@@ -184,12 +205,17 @@ def tractive_power_profile(df):
     v = df['Speed (m/s)']
     dv_dt = df['Acceleration']
 
+    # Calculate road angle in radians
+    # road_angle_radians = np.radians(df['Gradient'])
+
     # Calculate forces
     rolling_resistance_force = m * g * (C0 + C1 * v ** 2)
     aerodynamic_drag_force = 0.5 * rho * C_D * A_F * v ** 2
     inertial_force = m * dv_dt
+    # gravitational_force = m * g * np.sin(road_angle_radians)
 
     # Total tractive force
+    # df['Tractive Force (N)'] = inertial_force + aerodynamic_drag_force + rolling_resistance_force + gravitational_force
     df['Tractive Force (N)'] = inertial_force + aerodynamic_drag_force + rolling_resistance_force
 
     # Tractive power
@@ -252,6 +278,10 @@ def required_energy_profile(df):
     df['Aerodynamic Drag (N)'] = 0.5 * config.AIR_DENSITY * config.C_DRAG * config.frontal_area * df['Speed (m/s)'] ** 2
     df['Rolling Resistance (N)'] = config.mass * config.GRAVITY * (config.C0 + config.C1 * df['Speed (m/s)'] ** 2)
     df['Inertial Force (N)'] = config.mass * df['Acceleration']  # m * dv/dt
+    # road_angle_radians = np.radians(df['Gradient'])
+    # df['Gravitational Force (N)'] = config.mass * config.GRAVITY * np.sin(road_angle_radians)
+    # df['Tractive Force (N)'] = df['Aerodynamic Drag (N)'] + df['Rolling Resistance (N)'] + df['Inertial Force (N)'] + \
+    #                            df['Gravitational Force (N)']
     df['Tractive Force (N)'] = df['Aerodynamic Drag (N)'] + df['Rolling Resistance (N)'] + df['Inertial Force (N)']
 
     # Calculate instantaneous power P_TR(t) = F_TR * v(t)

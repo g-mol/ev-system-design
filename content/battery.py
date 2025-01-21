@@ -20,7 +20,7 @@ def battery():
 
     # Step 2: Input total distance
     st.subheader("2: Total Distance")
-    total_distance_km = st.number_input("Enter the total distance (km):", min_value=10, max_value=1000, value=150,
+    total_distance_km = st.number_input("Enter the total distance (km):", min_value=10, max_value=1000, value=300,
                                         step=10)
     total_energy_required_kwh = total_distance_km * energy_consumption_per_km
     st.write(f"**Total Energy Required:** {total_energy_required_kwh:.2f} kWh")
@@ -65,7 +65,7 @@ def battery():
 
     # Inputs for motor voltage and cell specifications
     st.subheader("1: Motor Voltage and Cell Specifications")
-    motor_voltage = st.number_input("Desired Nominal Voltage (V):", min_value=100, max_value=1000, value=350, step=10)
+    motor_voltage = st.number_input("Desired Nominal Voltage (V):", min_value=100, max_value=1000, value=360, step=10)
     nominal_cell_voltage = st.number_input("Nominal Voltage per Cell (V):", value=3.2, step=0.1)
     charged_cell_voltage = st.number_input("Fully Charged Voltage per Cell (V):", value=3.6, step=0.1)
     discharged_cell_voltage = st.number_input("Fully Discharged Voltage per Cell (V):", value=2.5, step=0.1)

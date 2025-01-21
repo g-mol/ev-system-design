@@ -30,7 +30,7 @@ def scenarios():
     input1, input2, input3, input4 = st.columns(4)
 
     with input1:
-        current_speed = st.number_input("Speed (km/h)", min_value=0, max_value=400, value=100)
+        current_speed = st.number_input("Speed (km/h)", min_value=0, max_value=400, value=60)
     with input2:
         current_road_angle = st.number_input("Incline (%)", min_value=0.0, max_value=45.0, value=5.0, step=1.0)
     with input3:
@@ -57,15 +57,15 @@ def scenarios():
             "headwind_kph": headwind_speed,
         },
         {
-            "name": f"Time to 100 km/h in {round(config.time_to_100, 2)} seconds",
-            "speed_kph": 100,
+            "name": f"Time to {config.top_speed if config.top_speed < 100 else 100} km/h in {round(config.time_to_100, 2)} seconds",
+            "speed_kph": config.top_speed if config.top_speed < 100 else 100,
             "grade_percent": 0,
             "acceleration": round(config.time_to_100_acceleration, 2),
-            "headwind_kph": headwind_speed,
+            "headwind_kph": 0,
         },
         {
             "name": "Flat Roads",
-            "speed_kph": 100,
+            "speed_kph": config.top_speed if config.top_speed < 100 else 100,
             "grade_percent": 0,
             "acceleration": 0,
             "headwind_kph": headwind_speed,

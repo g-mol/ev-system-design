@@ -31,8 +31,5 @@ with tabs[3]:
 with tabs[4]:
     battery()
 
-# with tabs[5]:
-#     generate_gradient()
-
 with tabs[5]:
     logistics()
