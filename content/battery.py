@@ -137,3 +137,5 @@ def battery():
     | Volume             | **{volume_l:.2f} L**             |
     """
     st.markdown(summary_table)
+
+    st.session_state["final_capacity_kwh"] = final_capacity_kwh

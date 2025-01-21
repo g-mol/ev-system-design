@@ -4,8 +4,8 @@ from content.scenarios import scenarios
 from content.drive_train import drive_train
 from content.drive_profile import drive_profile
 from content.battery import battery
-from content.generate_gradient import generate_gradient
 from content.logistics import logistics
+from content.financials import financials
 from interface import sidebar_calculations
 
 # Title and Description
@@ -13,7 +13,7 @@ st.title("Electric Vehicle System Design Tool")
 
 sidebar_calculations()
 # "Vehicle Dynamics",
-tabs = st.tabs(["About", "Scenarios", "Drive Train", "Drive Profile", "Battery", "Logistics"])
+tabs = st.tabs(["About", "Scenarios", "Drive Train", "Drive Profile", "Battery", "Logistics", "Financials"])
 
 with tabs[0]:
     about()
@@ -33,3 +33,6 @@ with tabs[4]:
 
 with tabs[5]:
     logistics()
+
+with tabs[6]:
+    financials()

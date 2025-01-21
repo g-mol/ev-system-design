@@ -34,6 +34,7 @@ def logistics():
     shift_length = st.number_input("Shift length per day in hours", min_value=0, value=4)
     amount_of_shifts = st.number_input("Amount of shifts per day", min_value=0, value=3)
     total_working_hours_per_day = shift_length * amount_of_shifts
+    st.session_state["total_working_hours_per_day"] = total_working_hours_per_day
 
     minimum_vans_needed = math.ceil(packages_per_day_in_area / (packaged_per_hour * total_working_hours_per_day))
     st.success(f"**Minimum needed vans for normal packages in area:** {minimum_vans_needed} vans")
@@ -95,7 +96,10 @@ def logistics():
 
     st.success(f"**Total restaurant crates per day in area:** {restaurant_crates_per_day_in_area:.0f} crates")
 
-    minimum_vans_needed_restaurant = math.ceil(restaurant_crates_per_day_in_area / amount_of_crates)
+    amount_of_crates_per_van_per_day = amount_of_crates * amount_of_shifts
+    st.write(f"**Amount of crates that a van can deliver per day:** {amount_of_crates_per_van_per_day}")
+
+    minimum_vans_needed_restaurant = math.ceil(restaurant_crates_per_day_in_area / amount_of_crates_per_van_per_day)
 
     st.success(f"**Minimum needed vans for restaurant crates in area:** {minimum_vans_needed_restaurant} vans")
 
@@ -103,3 +107,7 @@ def logistics():
     st.markdown(f"### **Total needed vans**")
     total_vans_needed = minimum_vans_needed + minimum_vans_needed_restaurant
     st.error(f"**Total needed vans in area:** {total_vans_needed} vans")
+
+    st.session_state["total_vans_needed"] = total_vans_needed
+    st.session_state["packages_per_day_in_area"] = packages_per_day_in_area
+    st.session_state["restaurant_crates_per_day_in_area"] = restaurant_crates_per_day_in_area
