@@ -23,37 +23,3 @@ gradeability_percent = None
 km = None
 C0 = None
 C1 = None
-
-
-# current_road_angle = None
-# current_speed = None
-# current_acceleration = None
-# headwind_speed = None
-#
-# # Calculated Values
-# top_speed_mps = None
-# headwind_speed_mps = None
-# relative_speed = None
-# road_angle_rad = None
-# frontal_area = None
-# time_to_100_acceleration = None
-# current_speed_mps = None
-# angular_velocity = None
-#
-# # Forces and Power
-# rolling_force = None
-# gravitational_force = None
-# drag_force = None
-# road_load_force = None
-# traction_force = None
-# power_required = None
-# required_tractive_force_near_zero = None
-# torque_required = None
-#
-# # Constants K1 and K2
-# k1 = None
-# k2 = None
-#
-# # Terminal Velocity and Time to Reach
-# terminal_velocity = None
-# time_to_vt = None
