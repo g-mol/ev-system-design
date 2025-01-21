@@ -20,6 +20,9 @@ def about():
         - **Drive Profile**: Calculate the energy usage and battery capacity needed for the chosen driving profile. 
         Different drive profiles can be chosen to see the effect on the energy usage.
         - **Battery**: Calculate the battery capacity based on the energy usage and required range.
+        - **Logistics**: Calculate the amount of vehicles needed for the chosen area and the size of the loading area.
+        - **Financials**: Calculate the economic feasibility of the delivery system, including investment, ongoing 
+        costs, and break-even analysis.
         
         ### Disclaimer
         This tool is created for the course "Electric Vehicle System Design" at the University of Twente. Feel free to

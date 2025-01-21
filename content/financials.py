@@ -11,8 +11,11 @@ def financials():
     st.title("Economic Validity of the Delivery System")
 
     # Description
-    st.write(
-        "This page calculates the economic feasibility of the delivery system, including investment, ongoing costs, and break-even analysis.")
+    st.write("This page calculates the economic feasibility of the delivery system, including investment, "
+             "ongoing costs, and break-even analysis.")
+
+    st.write("Keep in mind that a lot of the input values are estimates and can vary in reality. This will influence "
+             "the accuracy of the calculations heavily.")
 
     st.markdown("---")
 
@@ -70,7 +73,6 @@ def financials():
     distribution_centre_energy_cost = distribution_centre_kwh_usage * kwh_price
     st.write(f"**Monthly Energy Cost for Distribution Centre:** \u20ac{distribution_centre_energy_cost:,.0f}")
     extra_maintenance_cost = st.number_input("Extra Maintenance Costs (\u20ac):", min_value=0, value=100000, step=1000)
-
 
     total_monthly_distribution_cost = (
             distribution_centre_energy_cost + extra_maintenance_cost + monthly_cost_drivers + monthly_cost_distribution_centre_employees

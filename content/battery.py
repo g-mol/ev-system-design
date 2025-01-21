@@ -119,8 +119,8 @@ def battery():
     energy_density_wh_per_l = st.number_input("Energy Density (Wh/L):", min_value=100, max_value=500, value=235,
                                               step=10)
 
-    weight_kg = total_capacity_kwh * 1000 / specific_energy_wh_per_kg
-    volume_l = total_capacity_kwh * 1000 / energy_density_wh_per_l
+    weight_kg = final_capacity_kwh * 1000 / specific_energy_wh_per_kg
+    volume_l = final_capacity_kwh * 1000 / energy_density_wh_per_l
 
     st.write(f"**Weight:** {weight_kg:.2f} kg")
     st.write(f"**Volume:** {volume_l:.2f} L")
@@ -139,3 +139,9 @@ def battery():
     st.markdown(summary_table)
 
     st.session_state["final_capacity_kwh"] = final_capacity_kwh
+
+    if st.session_state["average_energy_efficiency"] is None:
+        st.session_state["average_energy_efficiency"] = 0
+
+    theoretical_range = final_capacity_kwh * st.session_state["average_energy_efficiency"]
+    st.success(f"**Theoretical Range:** {theoretical_range:.0f} km")

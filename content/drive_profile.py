@@ -339,6 +339,8 @@ def required_energy_profile(df):
     st.write(f"**Total Energy Used:** {total_energy_kwh:.2f} kWh")
     st.write(f"**Total Distance Traveled:** {total_distance_km:.2f} km")
     st.write(f"**Average Energy Efficiency:** {1 / kwh_per_km:.2f} km/kWh" if kwh_per_km > 0 else "N/A")
+    average_energy_efficiency = 1 / kwh_per_km if kwh_per_km > 0 else 0
+    st.session_state["average_energy_efficiency"] = average_energy_efficiency
     # st.write(f"**Energy Consumption per Kilometer:** {kwh_per_km * 1000:.0f} Wh/km")
 
     st.success(f"**Energy Consumption per Kilometer:** {kwh_per_km * 1000:.0f} Wh/km")
