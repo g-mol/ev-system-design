@@ -5,6 +5,9 @@ import plotly.graph_objects as go
 
 
 def financials():
+    if st.session_state["total_vans_needed"] is None:
+        st.session_state["total_vans_needed"] = 1
+
     st.title("Economic Validity of the Delivery System")
 
     # Description
